@@ -37,3 +37,11 @@ export function getEnv(): Env {
         };
   return cached;
 }
+
+/**
+ * Only the NEXT_PUBLIC_* values (no secrets required), e.g. for metadataBase during
+ * prerender, where the full server env may be unavailable.
+ */
+export function getPublicEnv(): ClientEnv {
+  return parseEnv(clientEnvSchema, { NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL });
+}

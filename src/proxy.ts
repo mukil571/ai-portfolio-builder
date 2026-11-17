@@ -2,7 +2,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
- * Optimistic gate for /dashboard: no session cookie -> redirect to /login?next=...
+ * Optimistic gate for /dashboard and owner previews: no session cookie -> /login?next=...
  * This only checks the cookie exists; every dashboard page and action still validates
  * the session server-side with requireUser() (lib/auth/session.ts).
  */
@@ -15,5 +15,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/preview/:path*"],
 };

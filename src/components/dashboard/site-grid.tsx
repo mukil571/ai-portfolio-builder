@@ -1,4 +1,4 @@
-import { ExternalLink, Globe, MessageCircleQuestion, Plus } from "lucide-react";
+import { ExternalLink, Eye, Globe, MessageCircleQuestion, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -63,6 +63,14 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
         </span>
       </div>
       <p className="mt-1 text-xs text-muted-foreground capitalize">{site.kind}</p>
+      <Link
+        href={`/preview/${site.id}`}
+        className="mt-3 inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <Eye className="size-3.5" aria-hidden="true" />
+        Preview
+        <span className="sr-only"> {site.name}</span>
+      </Link>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-6 text-sm">
         {published ? (

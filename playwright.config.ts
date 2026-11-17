@@ -17,9 +17,11 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `npm run dev -- --port ${PORT}`,
+    // Production build: realistic (real 404 status codes, prerendering, caching) and free
+    // of dev-server compile races when several workers hit a new route at once.
+    command: `npm run build && npm run start -- --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 300_000,
   },
 });
