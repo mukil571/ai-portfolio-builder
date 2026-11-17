@@ -9,11 +9,11 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 0 — Project setup
 **Goal:** a running, typed, linted, tested skeleton deployed to Vercel.
 
-- [ ] Create Next.js app (App Router, TS strict, Tailwind), install shadcn/ui, Framer Motion
-- [ ] Add Drizzle + Postgres connection (Neon/Supabase), enable pgvector extension
-- [ ] Typed `env.ts` with Zod, `.env.example`
-- [ ] ESLint, Prettier, Vitest, Playwright configs; npm scripts from CLAUDE.md section 9
-- [ ] Place `CLAUDE.md` and `BUILD_PLAN.md` in repo root
+- [x] Create Next.js app (App Router, TS strict, Tailwind), install shadcn/ui, Framer Motion
+- [ ] Add Drizzle + Postgres connection (Neon/Supabase), enable pgvector extension — code + migration done; migration not yet applied (local DNS blocks Neon hosts, see Decision log)
+- [x] Typed `env.ts` with Zod, `.env.example`
+- [x] ESLint, Prettier, Vitest, Playwright configs; npm scripts from CLAUDE.md section 9
+- [x] Place `CLAUDE.md` and `BUILD_PLAN.md` in repo root
 - [ ] Deploy empty app to Vercel
 
 **Done when:** `typecheck`, `lint`, `test` all pass; the deployed URL loads.
@@ -183,5 +183,10 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 0): Next.js 16.4.6 with `cacheComponents` on (scaffold default) — dynamic route handlers call `await connection()` instead of `export const dynamic`. Tailwind 4, shadcn/ui (`base-nova` style, Base UI primitives). Animation lib is `motion` (current name of Framer Motion; import from `motion/react`).
+- 2026-11-17 (Phase 0): Database is Neon (project `divine-grass-68095393`, branch `production`), linked via `neon init`, which wrote `.env.local` and added `neon.ts` + `@neon/config`/`@neon/env` deps. App uses `drizzle-orm/neon-http`; migrations use `DATABASE_URL_UNPOOLED`. pgvector enabled by custom migration `0000_enable_pgvector.sql`.
+- 2026-11-17 (Phase 0): Env validation in `src/env.ts` (server-only) over pure schemas in `src/lib/env/schema.ts`; `SKIP_ENV_VALIDATION=1` bypass for tooling. `@types/node` bumped to 24 (Vitest 5 peer requirement).
+- 2026-11-17 (Phase 0): Deploy via Vercel GitHub import of `origin/main`. Local network DNS (10.34.252.207) refuses `*.aws.neon.tech` lookups, so `db:migrate` and `/api/health` can't reach Neon locally until DNS is changed.
 
 - 2026-11-17: Single TypeScript full-stack repo. "Deploy" = publish at `/site/[slug]`. General-tech answers off by default. Plans are faked. Embeddings use one fixed platform model; generation uses owner's provider.
