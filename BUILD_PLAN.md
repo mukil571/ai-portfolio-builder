@@ -60,12 +60,13 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 3 — Create-website wizard
 **Goal:** owner can create and publish a site end to end (no AI yet).
 
-- [ ] Step 1: choose Business/Product or Portfolio
-- [ ] Step 2: choose template (cards with live preview) — only Minimal Mono available for now, others "coming soon"
-- [ ] Step 3: section forms (hero, about, skills, experience, education, projects, contact…), autosave drafts, image upload, reorder sections, empty = omitted
-- [ ] Step 4: placeholder for knowledge step (built in Phase 4)
-- [ ] Step 5: slug picker with live availability check, preview, **Deploy** button
-- [ ] Site appears on dashboard with live link
+- [x] Step 1: choose Business/Product or Portfolio (+ site name)
+- [x] Step 2: choose template (cards with live iframe preview) — only Minimal Mono available, others "coming soon"
+- [x] Step 3: section forms for all 13 types (schema-driven editor), debounced autosave, image upload (Vercel Blob, URL paste fallback), reorder sections, add sections, empty = omitted ("Shown/Hidden" badge)
+- [x] Step 4: placeholder for knowledge step (built in Phase 4)
+- [x] Step 5: slug picker with live availability check (format, reserved words, taken; race-safe), preview, **Deploy** button
+- [x] Site appears on dashboard with live link (+ Edit / Preview links)
+- [ ] Live verification on Vercel (needs push; image upload needs a Vercel Blob store)
 
 **Done when:** a new user completes the wizard in under 5 minutes and the site is live at `/site/[slug]`; slug collisions and reserved words handled.
 
@@ -185,6 +186,11 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 3): Wizard = `/dashboard/new` (steps 1-2, client) -> draft site created with placeholder slug `draft-<random>` (prefix reserved) + default sections per kind + `ai_settings` (mode none) -> `/dashboard/sites/[id]/setup/{content,knowledge,publish}`. Slug chosen at publish; `publishSite` catches unique-violation races. Publish and edits to a published site call `updateTag(siteCacheTag(slug))` (old slug too).
+- 2026-11-17 (Phase 3): Autosave stores work-in-progress section content as typed (shape/size-checked, 50 KB cap); the strict section schema runs at render time and decides what shows. All builder queries are owner-scoped and PGlite-tested (`site-builder.test.ts`).
+- 2026-11-17 (Phase 3): Image upload = Vercel Blob client uploads via `/api/uploads` (auth + site ownership, JPEG/PNG/WebP/AVIF/GIF only, no SVG, 5 MB, random suffix, `sites/<id>/` prefix). Without `BLOB_READ_WRITE_TOKEN` the editor offers link paste only.
+- 2026-11-17 (Phase 3): Local dev database = PGlite when `DATABASE_URL="pglite:<dir>"` (one instance per process via globalThis; separate instances in Next's route/page bundles didn't see each other's writes). Refused on Vercel. Without Resend locally, emails go to `.local-outbox/` so e2e can follow verification links. E2E (`wizard.spec.ts`) covers signup -> verify -> wizard -> publish -> live page in ~10 s.
 
 - 2026-11-17 (Phase 2): Phase 2 done. The first live seed failed (`inconsistent types deduced for parameter`): a SQL param was used as both enum and text. Seed logic moved to `src/lib/sites/seed-demo.ts` with explicit casts and PGlite tests, so SQL type errors fail locally first.
 
