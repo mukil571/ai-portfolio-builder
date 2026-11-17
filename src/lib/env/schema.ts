@@ -23,6 +23,8 @@ export const serverEnvSchema = z.object({
   EMAIL_FROM: z.string().min(3).default("Loriyum <onboarding@resend.dev>"),
   /** Platform Google AI key for the fixed embedding model. Optional until Phase 4. */
   GOOGLE_GENERATIVE_AI_API_KEY: optionalSecret,
+  /** "1" on Vercel (build and runtime); unset on a local machine. */
+  VERCEL: optionalSecret,
   /** Vercel system vars (hostnames, no protocol); set automatically on Vercel. */
   VERCEL_PROJECT_PRODUCTION_URL: optionalSecret,
   VERCEL_URL: optionalSecret,

@@ -14,13 +14,15 @@ export async function GET(): Promise<Response> {
   await connection();
 
   try {
-    const { rows } = await getDb().execute<{ pgvector: boolean; schema: boolean }>(sql`
+    const result = await getDb().execute(sql`
       select
         exists(select 1 from pg_extension where extname = 'vector') as pgvector,
         (to_regclass('public.sites') is not null
           and to_regclass('public.knowledge_facts') is not null
           and to_regclass('public.users') is not null) as schema
     `);
+    // Both drivers (Neon Pool, local PGlite) return a `{ rows }` result.
+    const { rows } = result as { rows: { pgvector: boolean; schema: boolean }[] };
     const pgvector = rows[0]?.pgvector === true;
     const schema = rows[0]?.schema === true;
     const ok = pgvector && schema;

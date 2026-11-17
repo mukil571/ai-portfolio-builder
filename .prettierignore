@@ -11,3 +11,5 @@ playwright-report
 CLAUDE.md
 BUILD_PLAN.md
 AGENTS.md
+/.local-db/
+/.local-outbox/

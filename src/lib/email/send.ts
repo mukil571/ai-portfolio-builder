@@ -15,19 +15,29 @@ export class EmailNotConfiguredError extends Error {
 
 let resend: Resend | undefined;
 
+/** Local (non-Vercel) runs without Resend write emails here; e2e tests read them. */
+export const LOCAL_OUTBOX_DIR = ".local-outbox";
+
 /**
  * Sends a transactional email via Resend.
- * Without RESEND_API_KEY: in development the email (including links) is printed to the
- * server log so flows can be tested; in production it throws, never silently drops.
+ * Without RESEND_API_KEY: on a local machine the email is printed to the server log and
+ * saved to .local-outbox/ (so flows and e2e tests work); on Vercel it throws, never
+ * silently drops.
  */
 export async function sendEmail(email: Email): Promise<void> {
   const env = getEnv();
 
   if (!env.RESEND_API_KEY) {
-    if (env.NODE_ENV === "production") throw new EmailNotConfiguredError();
+    if (env.VERCEL) throw new EmailNotConfiguredError();
     console.info(
-      `[email:dev] RESEND_API_KEY not set; not sent.\n  to: ${email.to}\n  subject: ${email.subject}\n${email.text}`,
+      `[email:local] RESEND_API_KEY not set; not sent.\n  to: ${email.to}\n  subject: ${email.subject}\n${email.text}`,
     );
+    const { mkdir, writeFile } = await import("node:fs/promises");
+    const path = await import("node:path");
+    const dir = path.join(process.cwd(), LOCAL_OUTBOX_DIR);
+    await mkdir(dir, { recursive: true });
+    const file = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
+    await writeFile(path.join(dir, file), JSON.stringify(email, null, 2));
     return;
   }
 
