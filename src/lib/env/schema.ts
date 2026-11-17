@@ -31,11 +31,19 @@ export const serverEnvSchema = z.object({
 
 /** Variables safe to expose to the browser. Must be prefixed NEXT_PUBLIC_. */
 export const clientEnvSchema = z.object({
-  /** Normalized to a bare origin, so "https://x.app/" and "https://x.app/path" both work. */
+  /**
+   * Normalized to a bare origin: "https://x.app/", "https://x.app/path" and a trailing-dot
+   * host "https://x.app." all become "https://x.app" (a trailing dot breaks links and
+   * origin checks on Vercel).
+   */
   NEXT_PUBLIC_APP_URL: z
     .url()
     .default("http://localhost:3000")
-    .transform((url) => new URL(url).origin),
+    .transform((value) => {
+      const url = new URL(value.trim());
+      url.hostname = url.hostname.replace(/\.+$/, "");
+      return url.origin;
+    }),
 });
 
 /**

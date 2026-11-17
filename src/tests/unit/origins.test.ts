@@ -27,6 +27,9 @@ describe("NEXT_PUBLIC_APP_URL normalization", () => {
     "https://ai-portfolio-builder-czbe.vercel.app/",
     "https://ai-portfolio-builder-czbe.vercel.app",
     "https://ai-portfolio-builder-czbe.vercel.app/login?x=1",
+    "https://ai-portfolio-builder-czbe.vercel.app.",
+    "https://ai-portfolio-builder-czbe.vercel.app./",
+    " https://ai-portfolio-builder-czbe.vercel.app ",
   ])("reduces %s to a bare origin", (url) => {
     expect(parseEnv(clientEnvSchema, { NEXT_PUBLIC_APP_URL: url }).NEXT_PUBLIC_APP_URL).toBe(
       "https://ai-portfolio-builder-czbe.vercel.app",
