@@ -10,9 +10,14 @@ import type { AppDb } from "@/lib/db/types";
  * A fresh in-memory Postgres (PGlite + pgvector) with all real migrations applied.
  * Each call is fully isolated. Use for query, ownership and tenant-isolation tests.
  */
-export async function createTestDb(): Promise<{ db: AppDb; close: () => Promise<void> }> {
+export async function createTestDb(): Promise<{
+  db: AppDb;
+  /** Raw PGlite client, for code that issues SQL directly (e.g. the demo seed). */
+  client: PGlite;
+  close: () => Promise<void>;
+}> {
   const client = new PGlite({ extensions: { vector } });
   const db = drizzle({ client, schema, casing: "snake_case" });
   await migrate(db, { migrationsFolder: "src/lib/db/migrations" });
-  return { db, close: () => client.close() };
+  return { db, client, close: () => client.close() };
 }
