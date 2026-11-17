@@ -25,13 +25,14 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 1 — Auth, schema, dashboard shell
 **Goal:** users can sign up/in and see an empty dashboard.
 
-- [ ] Full Drizzle schema + first migration: `users`, `sites`, `site_sections`, `knowledge_facts`, `knowledge_files`, `unanswered_questions`, `conversations`, `messages`, `leads`, `ai_settings`, `usage_logs`, `subscriptions`
-- [ ] Auth.js: email+password, Google, email verification, password reset
-- [ ] Route protection middleware for `/dashboard/*`
-- [ ] Dashboard layout (sidebar/topbar) and **My Websites** page:
+- [x] Full Drizzle schema + first migration: `users`, `sites`, `site_sections`, `knowledge_facts`, `knowledge_files`, `unanswered_questions`, `conversations`, `messages`, `leads`, `ai_settings`, `usage_logs`, `subscriptions` (+ `sessions`, `accounts`, `verifications`) — applied in production
+- [ ] Better Auth (replaces Auth.js): email+password, Google, email verification, password reset — built; live sign-up not yet verified (needs Vercel env vars + Resend key; Google needs OAuth keys)
+- [x] Route protection for `/dashboard/*` (`src/proxy.ts` cookie check + server-side `requireUser()`), e2e-tested incl. forged cookie
+- [x] Dashboard layout (sidebar/topbar) and **My Websites** page:
   - empty state "No websites yet" + Create website button
   - card grid for existing sites (name, status, live link, unanswered badge) + Add card
-- [ ] Landing page v1 (hero, how it works, pricing teaser, CTA) — polish later
+- [x] Landing page v1 (hero, how it works, pricing teaser, CTA) — polish later
+- [x] Ownership-scoping test for the sites query (PGlite + real migrations: `src/tests/unit/sites-query.test.ts`)
 
 **Done when:** sign up → log in → see empty state; unauthenticated users are redirected; ownership-scoping test exists for the sites query.
 
@@ -183,6 +184,10 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 1): Route protection = `src/proxy.ts` (Next 16's renamed middleware; optimistic session-cookie check) + `requireUser()` in every dashboard page (DB-validated). Session reads sit behind `<Suspense>` (Cache Components), and `headers()` is awaited before touching auth so prerender never needs secrets.
+- 2026-11-17 (Phase 1): Query functions take the db as a parameter (`AppDb`), so tests run them on PGlite (in-memory Postgres + pgvector, dev-only deps) with the real migrations. Neon is unreachable from the dev network, so this is the DB test path.
+- 2026-11-17 (Phase 1): Email: Resend; without `RESEND_API_KEY`, dev prints emails to the server log and production refuses to send (never silently drops). New users get a Free `subscriptions` row via a Better Auth `databaseHooks.user.create.after` hook.
 
 - 2026-11-17 (Phase 1): Schema approved and applied as migration `0001_phase1_schema` (15 tables, snake_case via Drizzle `casing`). App queries and migrations use Neon's WebSocket `Pool` (`drizzle-orm/neon-serverless`) for real transactions; `engines.node >=22` for built-in WebSocket.
 - 2026-11-17 (Phase 1): No ANN index on embeddings. Retrieval/dedup use exact cosine distance (`<=>`) filtered by `site_id` (btree). Revisit HNSW + iterative scan only if a single site's fact count makes exact scans slow.

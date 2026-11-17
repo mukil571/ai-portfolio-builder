@@ -24,7 +24,7 @@ Owner-specific means: rates, availability, skills, experience, projects, contact
 
 - Next.js (App Router) + TypeScript (strict) + Tailwind + shadcn/ui + Framer Motion
 - Postgres + pgvector (Neon or Supabase), Drizzle ORM + drizzle-kit migrations
-- Auth.js (email/password + Google)
+- Better Auth (email/password + Google, email verification, password reset; Drizzle adapter). Replaced Auth.js, see BUILD_PLAN decision log.
 - Vercel AI SDK for the provider abstraction (OpenAI, Anthropic, Google, etc.)
 - Zod for ALL input validation and for site-section schemas
 - Resend for email
