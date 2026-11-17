@@ -14,7 +14,8 @@ if (!url) {
 
 export default defineConfig({
   dialect: "postgresql",
-  schema: "./src/lib/db/schema.ts",
+  schema: "./src/lib/db/schema/index.ts",
+  casing: "snake_case",
   out: "./src/lib/db/migrations",
   dbCredentials: { url },
   strict: true,
