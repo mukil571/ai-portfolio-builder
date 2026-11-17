@@ -21,6 +21,8 @@ export default defineConfig({
     // of dev-server compile races when several workers hit a new route at once.
     command: `npm run build && npm run start -- --port ${PORT}`,
     url: `http://localhost:${PORT}`,
+    // Origin checks and email links must match the test server's port.
+    env: { NEXT_PUBLIC_APP_URL: `http://localhost:${PORT}` },
     reuseExistingServer: !process.env.CI,
     timeout: 300_000,
   },
