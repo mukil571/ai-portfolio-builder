@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { connection } from "next/server";
 
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 type Health = { ok: boolean; db: boolean; pgvector: boolean };
 
@@ -11,7 +11,7 @@ export async function GET(): Promise<Response> {
   await connection();
 
   try {
-    const rows = await db.execute<{ present: boolean }>(
+    const rows = await getDb().execute<{ present: boolean }>(
       sql`select exists(select 1 from pg_extension where extname = 'vector') as present`,
     );
     const pgvector = rows.rows[0]?.present === true;
