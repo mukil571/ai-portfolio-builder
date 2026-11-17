@@ -43,12 +43,13 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 2 — Section system and site renderer
 **Goal:** a published site renders from JSON, with empty sections omitted.
 
-- [ ] Zod schemas for every section type (hero, about, skills, experience, education, projects, services, pricing, testimonials, gallery, faq, contact, social)
-- [ ] Shared section components in `components/sections/` (themeable via CSS variables)
-- [ ] Renderer: ordered list of sections → components; skip empty/invalid sections
-- [ ] First template: **Minimal Mono** (portfolio)
-- [ ] `/site/[slug]`: published only (404 for draft/missing), SSR, metadata + Open Graph
-- [ ] Owner preview route for drafts (auth required)
+- [x] Zod schemas for every section type (hero, about, skills, experience, education, projects, services, pricing, testimonials, gallery, faq, contact, social) — `src/lib/validation/sections.ts`
+- [x] Shared section components in `components/sections/` (themeable via `--site-*` CSS variables)
+- [x] Renderer: ordered list of sections → components; skip empty/invalid sections — `src/lib/sites/render-plan.ts`
+- [x] First template: **Minimal Mono** (portfolio), light/dark with remembered visitor choice; sample at `/templates/minimal-mono`
+- [x] `/site/[slug]`: published only (real HTTP 404 for draft/missing), cached per slug, metadata + Open Graph
+- [x] Owner preview route for drafts (auth required): `/preview/[siteId]`, linked from dashboard cards
+- [ ] Seeded live site verified: `/site/demo` renders, `/site/demo-draft` 404s (pending: run the opt-in seed)
 
 **Done when:** seeded site renders beautifully on mobile and desktop; removing a section's content removes it from the page; draft is 404 publicly.
 
@@ -184,6 +185,12 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 2): `/site/[slug]` = `ensureStatic = "navigation"` + `instant = false` + data via `use cache` with `cacheTag("site:<slug>")` and `cacheLife("hours")`. The full render blocks, so drafts/unknown slugs return a real HTTP 404 (not a streamed soft 404). `generateStaticParams` returns the invalid slug `_` (Cache Components requires ≥1 param; it never queries the DB). **Phase 3 must `revalidateTag(siteCacheTag(slug))` on publish, edit and unpublish.**
+- 2026-11-17 (Phase 2): Sections: blank strings = missing, invalid list items are dropped (not the whole section), links allow only http(s)/mailto/tel/#anchor, gallery images require alt text. Empty sections are omitted, along with their nav link.
+- 2026-11-17 (Phase 2): Templates style only `--site-*` tokens on `.site-root[data-template][data-mode]`, independent of the dashboard's dark theme. Visitor light/dark choice is stored in localStorage and applied by an inline script before paint. Owner images use plain `<img>` until uploads/blob storage (Phase 3).
+- 2026-11-17 (Phase 2): Demo seed (`scripts/seed-demo.ts`, Node type stripping) runs in `vercel-build` only while `SEED_OWNER_EMAIL` is set; it never takes over a slug owned by someone else and never fails the deploy. Slugs `demo` / `demo-draft` should be reserved in Phase 3.
+- 2026-11-17 (Phase 2): E2E now runs against a production build (`next build && next start`) for real status codes and to avoid dev-server compile races. The dev network's DNS now resolves Neon again.
 
 - 2026-11-17 (Phase 1): Phase 1 done. Live sign-up hit two config issues, both fixed in code: `NEXT_PUBLIC_APP_URL` is normalized to a bare origin (trailing slash, path, spaces and a trailing-dot host are stripped), and auth also trusts Vercel's own URLs (`VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, `VERCEL_BRANCH_URL`). Verification emails from Resend's shared test sender land in spam and only reach the Resend account's own address; a verified sending domain is needed before real users (Phase 10 at the latest).
 
