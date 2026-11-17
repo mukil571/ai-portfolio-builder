@@ -184,6 +184,12 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-17 (Phase 1): Schema approved and applied as migration `0001_phase1_schema` (15 tables, snake_case via Drizzle `casing`). App queries and migrations use Neon's WebSocket `Pool` (`drizzle-orm/neon-serverless`) for real transactions; `engines.node >=22` for built-in WebSocket.
+- 2026-11-17 (Phase 1): No ANN index on embeddings. Retrieval/dedup use exact cosine distance (`<=>`) filtered by `site_id` (btree). Revisit HNSW + iterative scan only if a single site's fact count makes exact scans slow.
+- 2026-11-17 (Phase 1): Embeddings: `gemini-embedding-001`, `outputDimensionality: 768`, L2-normalized; task types `RETRIEVAL_DOCUMENT` (facts), `RETRIEVAL_QUERY` (visitor queries), `SEMANTIC_SIMILARITY` (unanswered-question dedup). `embedding_model` stored per row.
+- 2026-11-17 (Phase 1): Auth library is Better Auth (not Auth.js): Auth.js v5 is still beta with no release since July 2026, and Better Auth ships email verification, password reset, Google and DB sessions. Approved by the owner.
+- 2026-11-17 (Phase 1): Facts keep both `approved_at` (first approval) and `verified_at` (last owner confirmation, for staleness). `ai_settings.key_version` records which server key encrypted the API key, for rotation.
+
 - 2026-11-17 (Phase 0): Migrations run on every Vercel deploy via `vercel-build` (`db:migrate && next build`), using `scripts/migrate.mjs` (drizzle-orm neon-http migrator, fails loudly) instead of `drizzle-kit migrate` (exited silently on errors). Reason: local DNS blocks Neon DB hosts, including from the Neon Console SQL Editor. Caveat: preview deploys also migrate the `production` branch; switch previews to a Neon branch before migrations get risky.
 
 - 2026-11-17 (Phase 0): Env validation and the DB client are lazy (`getEnv()`, `getDb()`), not module-load side effects. `next build` imports route modules to collect config; eager validation failed the first Vercel deploy when `DATABASE_URL` was unset. Missing vars now fail only the request that needs them.
