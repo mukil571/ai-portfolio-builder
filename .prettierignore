@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+next-env.d.ts
+src/lib/db/migrations/meta
+test-results
+playwright-report
+CLAUDE.md
+BUILD_PLAN.md
+AGENTS.md
