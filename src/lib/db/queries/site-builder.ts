@@ -218,3 +218,8 @@ export async function publishSite(
   }
   return { ok: true, slug, previousSlug: site.slug };
 }
+
+/** True if `ownerId` owns `siteId`. */
+export async function ownsSite(db: AppDb, ownerId: string, siteId: string): Promise<boolean> {
+  return Boolean(await ownedSite(db, ownerId, siteId));
+}

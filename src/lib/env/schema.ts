@@ -21,6 +21,8 @@ export const serverEnvSchema = z.object({
   /** Transactional email. Unset in dev: emails are printed to the server log instead. */
   RESEND_API_KEY: optionalSecret,
   EMAIL_FROM: z.string().min(3).default("Loriyum <onboarding@resend.dev>"),
+  /** Vercel Blob store token for image uploads. Unset: owners paste image URLs instead. */
+  BLOB_READ_WRITE_TOKEN: optionalSecret,
   /** Platform Google AI key for the fixed embedding model. Optional until Phase 4. */
   GOOGLE_GENERATIVE_AI_API_KEY: optionalSecret,
   /** "1" on Vercel (build and runtime); unset on a local machine. */
