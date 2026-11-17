@@ -7,6 +7,8 @@ export const serverEnvSchema = z.object({
   DATABASE_URL: z.url(),
   /** Direct (unpooled) Neon connection string, used by drizzle-kit migrations. */
   DATABASE_URL_UNPOOLED: z.url().optional(),
+  /** Platform Google AI key for the fixed embedding model. Optional until Phase 4. */
+  GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1).optional(),
 });
 
 /** Variables safe to expose to the browser. Must be prefixed NEXT_PUBLIC_. */
