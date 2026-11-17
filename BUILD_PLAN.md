@@ -10,7 +10,7 @@ Legend: `[ ]` todo · `[x]` done
 **Goal:** a running, typed, linted, tested skeleton deployed to Vercel.
 
 - [x] Create Next.js app (App Router, TS strict, Tailwind), install shadcn/ui, Framer Motion
-- [ ] Add Drizzle + Postgres connection (Neon/Supabase), enable pgvector extension — code + migration done; migration not yet applied (local DNS blocks Neon hosts, see Decision log)
+- [x] Add Drizzle + Postgres connection (Neon/Supabase), enable pgvector extension — applied via Vercel deploy; `/api/health` reports `pgvector: true`
 - [x] Typed `env.ts` with Zod, `.env.example`
 - [x] ESLint, Prettier, Vitest, Playwright configs; npm scripts from CLAUDE.md section 9
 - [x] Place `CLAUDE.md` and `BUILD_PLAN.md` in repo root
