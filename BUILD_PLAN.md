@@ -49,7 +49,7 @@ Legend: `[ ]` todo · `[x]` done
 - [x] First template: **Minimal Mono** (portfolio), light/dark with remembered visitor choice; sample at `/templates/minimal-mono`
 - [x] `/site/[slug]`: published only (real HTTP 404 for draft/missing), cached per slug, metadata + Open Graph
 - [x] Owner preview route for drafts (auth required): `/preview/[siteId]`, linked from dashboard cards
-- [ ] Seeded live site verified: `/site/demo` renders, `/site/demo-draft` 404s (pending: run the opt-in seed)
+- [x] Seeded live site verified: `/site/demo` renders at 390px and 1280px, `/site/demo-draft` returns 404 publicly, both cards on the owner's dashboard and Preview opens the draft
 
 **Done when:** seeded site renders beautifully on mobile and desktop; removing a section's content removes it from the page; draft is 404 publicly.
 
@@ -185,6 +185,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 2): Phase 2 done. The first live seed failed (`inconsistent types deduced for parameter`): a SQL param was used as both enum and text. Seed logic moved to `src/lib/sites/seed-demo.ts` with explicit casts and PGlite tests, so SQL type errors fail locally first.
 
 - 2026-11-17 (Phase 2): `/site/[slug]` = `ensureStatic = "navigation"` + `instant = false` + data via `use cache` with `cacheTag("site:<slug>")` and `cacheLife("hours")`. The full render blocks, so drafts/unknown slugs return a real HTTP 404 (not a streamed soft 404). `generateStaticParams` returns the invalid slug `_` (Cache Components requires ≥1 param; it never queries the DB). **Phase 3 must `revalidateTag(siteCacheTag(slug))` on publish, edit and unpublish.**
 - 2026-11-17 (Phase 2): Sections: blank strings = missing, invalid list items are dropped (not the whole section), links allow only http(s)/mailto/tel/#anchor, gallery images require alt text. Empty sections are omitted, along with their nav link.
