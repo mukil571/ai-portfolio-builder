@@ -3,13 +3,27 @@ import { describe, expect, it } from "vitest";
 import { clientEnvSchema, parseEnv, serverEnvSchema } from "@/lib/env/schema";
 
 const validDbUrl = "postgresql://user:pw@ep-test-pooler.example.neon.tech/neondb?sslmode=require";
+const base = { DATABASE_URL: validDbUrl, BETTER_AUTH_SECRET: "x".repeat(32) };
 
 describe("parseEnv", () => {
   it("accepts a valid server env and applies defaults", () => {
-    const env = parseEnv(serverEnvSchema, { DATABASE_URL: validDbUrl });
+    const env = parseEnv(serverEnvSchema, base);
     expect(env.DATABASE_URL).toBe(validDbUrl);
     expect(env.NODE_ENV).toBe("development");
     expect(env.DATABASE_URL_UNPOOLED).toBeUndefined();
+    expect(env.EMAIL_FROM).toContain("@");
+  });
+
+  it("treats empty optional secrets as not configured", () => {
+    const env = parseEnv(serverEnvSchema, { ...base, RESEND_API_KEY: "", GOOGLE_CLIENT_ID: "" });
+    expect(env.RESEND_API_KEY).toBeUndefined();
+    expect(env.GOOGLE_CLIENT_ID).toBeUndefined();
+  });
+
+  it("requires a long enough auth secret", () => {
+    expect(() => parseEnv(serverEnvSchema, { ...base, BETTER_AUTH_SECRET: "short" })).toThrowError(
+      /BETTER_AUTH_SECRET/,
+    );
   });
 
   it("lists every missing or invalid key in one error", () => {
@@ -19,7 +33,7 @@ describe("parseEnv", () => {
   });
 
   it("rejects a malformed URL", () => {
-    expect(() => parseEnv(serverEnvSchema, { DATABASE_URL: "not-a-url" })).toThrowError(
+    expect(() => parseEnv(serverEnvSchema, { ...base, DATABASE_URL: "not-a-url" })).toThrowError(
       /DATABASE_URL/,
     );
   });
