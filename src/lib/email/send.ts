@@ -41,8 +41,11 @@ export async function sendEmail(email: Email): Promise<void> {
   });
   if (error) {
     // Details stay in server logs; callers surface a generic message.
+    // Resend's message explains the rejection (e.g. test-sender recipient limits,
+    // unverified domain); it contains no secrets. The recipient is not logged.
     console.error("[email] Resend rejected the email", {
       name: error.name,
+      message: error.message,
       subject: email.subject,
     });
     throw new Error("Failed to send email.");
