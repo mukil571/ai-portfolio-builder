@@ -26,7 +26,7 @@ Legend: `[ ]` todo · `[x]` done
 **Goal:** users can sign up/in and see an empty dashboard.
 
 - [x] Full Drizzle schema + first migration: `users`, `sites`, `site_sections`, `knowledge_facts`, `knowledge_files`, `unanswered_questions`, `conversations`, `messages`, `leads`, `ai_settings`, `usage_logs`, `subscriptions` (+ `sessions`, `accounts`, `verifications`) — applied in production
-- [ ] Better Auth (replaces Auth.js): email+password, Google, email verification, password reset — built; live sign-up not yet verified (needs Vercel env vars + Resend key; Google needs OAuth keys)
+- [x] Better Auth (replaces Auth.js): email+password, email verification, password reset — sign up → confirm email → log in → empty dashboard verified live on Vercel. Google sign-in is built but off until `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` are added (owner chose to skip for now).
 - [x] Route protection for `/dashboard/*` (`src/proxy.ts` cookie check + server-side `requireUser()`), e2e-tested incl. forged cookie
 - [x] Dashboard layout (sidebar/topbar) and **My Websites** page:
   - empty state "No websites yet" + Create website button
@@ -184,6 +184,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-17 (Phase 1): Phase 1 done. Live sign-up hit two config issues, both fixed in code: `NEXT_PUBLIC_APP_URL` is normalized to a bare origin (trailing slash, path, spaces and a trailing-dot host are stripped), and auth also trusts Vercel's own URLs (`VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, `VERCEL_BRANCH_URL`). Verification emails from Resend's shared test sender land in spam and only reach the Resend account's own address; a verified sending domain is needed before real users (Phase 10 at the latest).
 
 - 2026-11-17 (Phase 1): Route protection = `src/proxy.ts` (Next 16's renamed middleware; optimistic session-cookie check) + `requireUser()` in every dashboard page (DB-validated). Session reads sit behind `<Suspense>` (Cache Components), and `headers()` is awaited before touching auth so prerender never needs secrets.
 - 2026-11-17 (Phase 1): Query functions take the db as a parameter (`AppDb`), so tests run them on PGlite (in-memory Postgres + pgvector, dev-only deps) with the real migrations. Neon is unreachable from the dev network, so this is the DB test path.
