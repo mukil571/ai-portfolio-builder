@@ -6,6 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 
 import { getEnv } from "@/env";
 import { getDb } from "@/lib/db";
+import { appBaseUrl, trustedOrigins } from "@/lib/env/schema";
 import { accounts, sessions, users, verifications } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email/send";
 import { resetPasswordMessage, verifyEmailMessage } from "@/lib/email/templates";
@@ -17,9 +18,9 @@ function createAuth() {
 
   return betterAuth({
     appName: "Loriyum",
-    baseURL: env.NEXT_PUBLIC_APP_URL,
+    baseURL: appBaseUrl(env),
     secret: env.BETTER_AUTH_SECRET,
-    trustedOrigins: [env.NEXT_PUBLIC_APP_URL],
+    trustedOrigins: trustedOrigins(env),
     database: drizzleAdapter(getDb(), {
       provider: "pg",
       usePlural: true,
