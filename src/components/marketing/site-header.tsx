@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { buttonVariants } from "@/components/ui/button";
 
 import { Logo } from "./logo";
@@ -5,7 +7,7 @@ import { Logo } from "./logo";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/5 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <a href="#top" className="flex items-center gap-2 font-semibold tracking-tight">
           <Logo />
           Loriyum
@@ -20,10 +22,18 @@ export function SiteHeader() {
           <a href="#features" className="transition-colors hover:text-foreground">
             Features
           </a>
+          <a href="#pricing" className="transition-colors hover:text-foreground">
+            Pricing
+          </a>
         </nav>
-        <a href="#early-access" className={buttonVariants({ size: "lg" })}>
-          Get early access
-        </a>
+        <div className="flex items-center gap-2">
+          <Link href="/login" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+            Log in
+          </Link>
+          <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+            Get started
+          </Link>
+        </div>
       </div>
     </header>
   );

@@ -1,10 +1,12 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { FadeIn } from "@/components/fade-in";
 import { ChatPreview } from "@/components/marketing/chat-preview";
 import { Features } from "@/components/marketing/features";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Logo } from "@/components/marketing/logo";
+import { PricingTeaser } from "@/components/marketing/pricing-teaser";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -48,13 +50,13 @@ export default function Home() {
             </FadeIn>
             <FadeIn delay={0.24}>
               <div className="mt-10 flex flex-wrap items-center gap-3">
-                <a
-                  href="#early-access"
+                <Link
+                  href="/signup"
                   className={buttonVariants({ size: "lg", className: "h-11 px-5 text-sm" })}
                 >
-                  Get early access
+                  Create your site
                   <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                </a>
+                </Link>
                 <a
                   href="#how"
                   className={buttonVariants({
@@ -78,8 +80,9 @@ export default function Home() {
 
         <HowItWorks />
         <Features />
+        <PricingTeaser />
 
-        <section id="early-access" className="scroll-mt-20 px-4 pb-24 sm:px-6 sm:pb-32">
+        <section id="get-started" className="scroll-mt-20 px-4 pb-24 sm:px-6 sm:pb-32">
           <FadeIn>
             <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-card/60 px-6 py-16 text-center sm:px-16">
               <div
@@ -87,11 +90,21 @@ export default function Home() {
                 className="absolute inset-x-0 -top-24 mx-auto size-72 rounded-full bg-[var(--brand-from)]/30 blur-[100px]"
               />
               <h2 className="relative text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-                Launching soon.
+                Teach your site once. Let it answer forever.
               </h2>
               <p className="relative mx-auto mt-4 max-w-lg text-muted-foreground">
-                Loriyum is in active development. Sign-up opens with the first release.
+                Create a free account and set up your first site in minutes.
               </p>
+              <Link
+                href="/signup"
+                className={buttonVariants({
+                  size: "lg",
+                  className: "relative mt-8 h-11 px-5 text-sm",
+                })}
+              >
+                Get started free
+                <ArrowRight data-icon="inline-end" aria-hidden="true" />
+              </Link>
             </div>
           </FadeIn>
         </section>
