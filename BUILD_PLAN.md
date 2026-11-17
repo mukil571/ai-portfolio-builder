@@ -14,7 +14,7 @@ Legend: `[ ]` todo · `[x]` done
 - [x] Typed `env.ts` with Zod, `.env.example`
 - [x] ESLint, Prettier, Vitest, Playwright configs; npm scripts from CLAUDE.md section 9
 - [x] Place `CLAUDE.md` and `BUILD_PLAN.md` in repo root
-- [ ] Deploy empty app to Vercel
+- [x] Deploy empty app to Vercel — https://ai-portfolio-builder-czbe.vercel.app/
 
 **Done when:** `typecheck`, `lint`, `test` all pass; the deployed URL loads.
 
