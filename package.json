@@ -14,8 +14,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:studio": "drizzle-kit studio",
+    "vercel-build": "npm run db:migrate && next build"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

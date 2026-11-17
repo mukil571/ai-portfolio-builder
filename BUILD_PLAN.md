@@ -184,6 +184,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-17 (Phase 0): Migrations run on every Vercel deploy via `vercel-build` (`db:migrate && next build`), using `scripts/migrate.mjs` (drizzle-orm neon-http migrator, fails loudly) instead of `drizzle-kit migrate` (exited silently on errors). Reason: local DNS blocks Neon DB hosts, including from the Neon Console SQL Editor. Caveat: preview deploys also migrate the `production` branch; switch previews to a Neon branch before migrations get risky.
+
 - 2026-11-17 (Phase 0): Env validation and the DB client are lazy (`getEnv()`, `getDb()`), not module-load side effects. `next build` imports route modules to collect config; eager validation failed the first Vercel deploy when `DATABASE_URL` was unset. Missing vars now fail only the request that needs them.
 
 - 2026-11-17 (Phase 0): Next.js 16.4.6 with `cacheComponents` on (scaffold default) — dynamic route handlers call `await connection()` instead of `export const dynamic`. Tailwind 4, shadcn/ui (`base-nova` style, Base UI primitives). Animation lib is `motion` (current name of Framer Motion; import from `motion/react`).
