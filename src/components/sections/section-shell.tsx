@@ -1,22 +1,9 @@
 import type { ReactNode } from "react";
 
 import { FadeIn } from "@/components/fade-in";
+import { sectionTitles } from "@/lib/sites/section-titles";
 
-export const sectionTitles = {
-  hero: "Home",
-  about: "About",
-  skills: "Skills",
-  experience: "Experience",
-  education: "Education",
-  projects: "Projects",
-  services: "Services",
-  pricing: "Pricing",
-  testimonials: "Testimonials",
-  gallery: "Gallery",
-  faq: "FAQ",
-  contact: "Contact",
-  social: "Elsewhere",
-} as const;
+export { sectionTitles };
 
 /** Standard section frame: anchor id, mono index label, h2, restrained fade-in. */
 export function SectionShell({

@@ -1,16 +1,16 @@
-import { ArrowLeft, Wand2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { NewSiteForm } from "@/components/wizard/new-site-form";
 import { requireUser } from "@/lib/auth/session";
 
-/** Placeholder until the create-website wizard lands in Phase 3. */
+export const metadata: Metadata = { title: "Create website · Loriyum" };
+
 export default function NewWebsitePage() {
   return (
-    <div className="mx-auto max-w-xl">
-      <Suspense fallback={null}>
-        <AuthGate />
-      </Suspense>
+    <div className="mx-auto max-w-4xl">
       <Link
         href="/dashboard"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -18,18 +18,15 @@ export default function NewWebsitePage() {
         <ArrowLeft className="size-4" aria-hidden="true" />
         My Websites
       </Link>
-      <div className="mt-6 rounded-2xl border border-white/10 bg-card/60 p-8 text-center">
-        <Wand2 className="mx-auto size-8 text-[var(--brand-from)]" aria-hidden="true" />
-        <h1 className="mt-4 text-xl font-semibold tracking-tight">Website wizard is coming next</h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Choosing a template, filling in sections and publishing arrive in the next update.
-        </p>
-      </div>
+      <h1 className="mt-4 mb-6 text-2xl font-semibold tracking-tight">Create a website</h1>
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-white/5" />}>
+        <Form />
+      </Suspense>
     </div>
   );
 }
 
-async function AuthGate() {
-  await requireUser("/dashboard/new");
-  return null;
+async function Form() {
+  const user = await requireUser("/dashboard/new");
+  return <NewSiteForm defaultName={`${user.name.split(" ")[0] || "My"}'s site`} />;
 }
