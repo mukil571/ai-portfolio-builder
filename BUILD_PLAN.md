@@ -102,7 +102,7 @@ Legend: `[ ]` todo · `[x]` done
 - [x] Conversations + messages persisted (hashed IP, anonymous visitor cookie)
 - [x] "AI not configured" state when the assistant isn't enabled (widget hidden; API returns the template)
 - [x] Eval: 37 cases (`src/tests/eval/chat-eval-set.ts`) pass 37/37 on real models in two consecutive runs; zero invented owner facts
-- [ ] Live verification on Vercel (owner enables the assistant on a published site and chats)
+- [x] Live verification on Vercel: owner enabled the assistant and got a verified answer, the unknown-question reply with email capture, and the off-topic redirect
 
 **Done when:** an eval test set (at least 30 questions: known, unknown, off-topic, injection attempts, paraphrased duplicates) passes; the bot never invents an owner fact in any test.
 
@@ -189,6 +189,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 5): Phase 5 done. Live chat verified by the owner (answer + badge, unknown + email capture, off-topic redirect).
 
 - 2026-11-21 (Phase 5): Platform chat + extraction model switched from `gemini-3.5-flash` to `gemini-3.5-flash-lite` (owner's choice): the free-tier quota for 3.5 Flash was exhausted (429). One config line each (`chat-config.ts`, `models.ts`).
 - 2026-11-21 (Phase 5): Grounding rules approved (`docs/chat-grounding.md`). The model only proposes; code decides. Non-answers are fixed templates. Prompt probes are redirected without calling a model. Messages flagged as injection are reduced to their genuine final question before retrieval/model (`genuineQuestion`), so injected "facts" and fake SYSTEM lines never reach the model.
