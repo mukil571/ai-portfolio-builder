@@ -15,6 +15,13 @@
       "when": 1794897538028,
       "tag": "0001_phase1_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795277512952,
+      "tag": "0002_knowledge_files_optional_storage",
+      "breakpoints": true
     }
   ]
 }

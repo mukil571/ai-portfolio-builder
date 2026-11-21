@@ -40,8 +40,11 @@ export const knowledgeFiles = pgTable(
     filename: text().notNull(),
     mimeType: text().notNull(),
     sizeBytes: integer().notNull(),
-    /** Location in blob storage (provider chosen in Phase 4). */
-    storageKey: text().notNull(),
+    /**
+     * Where the original file is stored. Null: originals are NOT kept (parsed in memory,
+     * only extracted facts are stored), per the Phase 4 privacy decision.
+     */
+    storageKey: text(),
     status: fileStatus().notNull().default("uploaded"),
     /** Friendly failure reason; technical details go to server logs. */
     error: text(),

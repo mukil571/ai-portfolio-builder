@@ -1,0 +1,1 @@
+ALTER TABLE "knowledge_files" ALTER COLUMN "storage_key" DROP NOT NULL;
