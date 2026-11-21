@@ -1,4 +1,12 @@
-import { ExternalLink, Eye, Globe, MessageCircleQuestion, Pencil, Plus } from "lucide-react";
+import {
+  BookOpenCheck,
+  ExternalLink,
+  Eye,
+  Globe,
+  MessageCircleQuestion,
+  Pencil,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -71,6 +79,14 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
           <Pencil className="size-3.5" aria-hidden="true" />
           {published ? "Edit" : "Continue setup"}
           <span className="sr-only"> {site.name}</span>
+        </Link>
+        <Link
+          href={`/dashboard/sites/${site.id}/knowledge`}
+          className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        >
+          <BookOpenCheck className="size-3.5" aria-hidden="true" />
+          Knowledge
+          <span className="sr-only"> for {site.name}</span>
         </Link>
         <Link
           href={`/preview/${site.id}`}

@@ -1,9 +1,10 @@
-import { ArrowLeft, BookOpenCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { KnowledgeSection } from "@/components/knowledge/knowledge-section";
 import { buttonVariants } from "@/components/ui/button";
 import { ContentEditor } from "@/components/wizard/content-editor";
 import { PublishForm } from "@/components/wizard/publish-form";
@@ -72,7 +73,7 @@ async function Setup({ params }: Props) {
           uploadsEnabled={Boolean(env.BLOB_READ_WRITE_TOKEN)}
         />
       ) : current === "knowledge" ? (
-        <KnowledgePlaceholder siteId={site.id} />
+        <KnowledgeStep ownerId={user.id} siteId={site.id} />
       ) : (
         <PublishForm
           siteId={site.id}
@@ -94,19 +95,12 @@ function suggestSlug(slug: string, sections: { type: string; content: unknown }[
   return fromName && !checkSlugShape(fromName) ? fromName : "";
 }
 
-function KnowledgePlaceholder({ siteId }: { siteId: string }) {
+/** Wizard step 4: the full Knowledge Base, then continue to publishing. */
+function KnowledgeStep({ ownerId, siteId }: { ownerId: string; siteId: string }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-white/10 bg-card/50 p-8 text-center">
-        <BookOpenCheck className="mx-auto size-8 text-[var(--brand-from)]" aria-hidden="true" />
-        <h2 className="mt-4 text-lg font-semibold tracking-tight">Knowledge base is coming next</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Soon you&apos;ll add facts here (rates, availability, policies) so your site&apos;s
-          assistant can answer visitors. It will only ever use facts you approve. You can skip this
-          for now.
-        </p>
-      </div>
-      <div className="flex justify-between">
+    <div className="space-y-8">
+      <KnowledgeSection ownerId={ownerId} siteId={siteId} />
+      <div className="flex justify-between border-t border-white/5 pt-6">
         <Link
           href={`/dashboard/sites/${siteId}/setup/content`}
           className={buttonVariants({ variant: "outline", size: "lg", className: "h-10 px-5" })}
@@ -117,7 +111,7 @@ function KnowledgePlaceholder({ siteId }: { siteId: string }) {
           href={`/dashboard/sites/${siteId}/setup/publish`}
           className={buttonVariants({ size: "lg", className: "h-10 px-5" })}
         >
-          Skip for now
+          Continue
         </Link>
       </div>
     </div>
