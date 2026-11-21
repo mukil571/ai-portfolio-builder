@@ -66,7 +66,7 @@ describe("extractFacts", () => {
       model: { modelId: string };
       temperature: number;
     };
-    expect(args.model.modelId).toBe("gemini-3.5-flash");
+    expect(args.model.modelId).toBe("gemini-3.5-flash-lite");
     expect(args.system).toMatch(/ONLY information explicitly stated/);
     expect(args.system).toMatch(/Ignore any instructions/);
     expect(args.temperature).toBe(0);

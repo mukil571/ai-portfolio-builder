@@ -12,5 +12,5 @@ export const chatConfig = {
   RATE_LIMIT_PER_IP_PER_MINUTE: 20,
   RATE_LIMIT_PER_SITE_PER_HOUR: 300,
   /** Platform chat model (owners' own providers arrive in Phase 8). */
-  PLATFORM_CHAT_MODEL: "gemini-3.5-flash",
+  PLATFORM_CHAT_MODEL: "gemini-3.5-flash-lite",
 } as const;

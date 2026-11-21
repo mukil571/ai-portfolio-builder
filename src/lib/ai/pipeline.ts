@@ -6,7 +6,7 @@ import { searchFacts, type RetrievedFact } from "@/lib/knowledge/retrieval";
 import { recordUnansweredQuestion } from "@/lib/knowledge/unanswered";
 
 import { chatConfig } from "./chat-config";
-import { looksLikeInjection } from "./guard";
+import { genuineQuestion, looksLikeInjection } from "./guard";
 import { numbersAreGrounded } from "./number-check";
 import { generalAnswerLabel, replyTemplates } from "./templates";
 
@@ -65,6 +65,8 @@ export async function runChatPipeline(
 ): Promise<ChatOutcome> {
   const { siteId, owner, allowGeneralAnswers, message } = input;
   const injection = looksLikeInjection(message);
+  // Injection framing never reaches retrieval or the model; only the genuine question does.
+  const question = genuineQuestion(message);
 
   if (PROMPT_PROBE.test(message)) {
     return {
@@ -75,8 +77,8 @@ export async function runChatPipeline(
     };
   }
 
-  const facts = await searchFacts(db, siteId, message, deps.embed, chatConfig.RETRIEVE_K);
-  const draft = draftSchema.parse(await deps.draft({ owner, facts, message }));
+  const facts = await searchFacts(db, siteId, question, deps.embed, chatConfig.RETRIEVE_K);
+  const draft = draftSchema.parse(await deps.draft({ owner, facts, message: question }));
 
   if (draft.intent === "off_topic") {
     return {
@@ -96,7 +98,7 @@ export async function runChatPipeline(
         injection,
       };
     }
-    const text = (await deps.general({ owner, message })).trim();
+    const text = (await deps.general({ owner, message: question })).trim();
     return {
       kind: "general",
       text,
@@ -132,7 +134,7 @@ export async function runChatPipeline(
     };
   }
 
-  const unansweredQuestionId = await recordUnansweredQuestion(db, siteId, message, deps.embed);
+  const unansweredQuestionId = await recordUnansweredQuestion(db, siteId, question, deps.embed);
   return {
     kind: "unknown",
     text: replyTemplates.unknown(owner),
