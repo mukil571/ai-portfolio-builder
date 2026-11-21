@@ -23,7 +23,7 @@ test("owner manages the knowledge base from wizard step 4", async ({ page }, inf
   await expect(page).toHaveURL(/\/setup\/knowledge$/);
   await expect(page.getByRole("heading", { name: /Approved facts/ })).toBeVisible();
 
-  // Add a fact by hand. Without an embedding key locally it saves but isn't searchable.
+  // Add a fact by hand (searchable or not depends on whether an AI key is configured locally).
   await page.getByLabel("Question a visitor might ask").fill("What is your hourly rate?");
   await page.getByLabel("Your answer").fill("My rate is $40/hour.");
   await page.getByRole("button", { name: "Add fact" }).click();
@@ -31,7 +31,6 @@ test("owner manages the knowledge base from wizard step 4", async ({ page }, inf
     has: page.getByRole("heading", { name: /Approved facts/ }),
   });
   await expect(approved.getByText("What is your hourly rate?")).toBeVisible();
-  await expect(approved.getByText(/^Not searchable yet/)).toBeVisible();
 
   // Suggestions from site content arrive for review, not approved.
   await page.getByRole("button", { name: "Suggest from my site content" }).click();
