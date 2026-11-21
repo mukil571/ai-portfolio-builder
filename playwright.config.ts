@@ -5,6 +5,8 @@ const PORT = 3100;
 export default defineConfig({
   testDir: "./src/tests/e2e",
   fullyParallel: true,
+  // One worker: several specs sign up, and Better Auth allows 3 sign-ups per 10 s per IP.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: "list",

@@ -34,9 +34,9 @@ test("new owner signs up, builds a site in the wizard and publishes it", async (
 
   await page.getByRole("link", { name: "Continue" }).click();
 
-  // Step 4: knowledge placeholder.
-  await expect(page.getByRole("heading", { name: "Knowledge base is coming next" })).toBeVisible();
-  await page.getByRole("link", { name: "Skip for now" }).click();
+  // Step 4: knowledge base (covered in knowledge.spec.ts); continue to publish.
+  await expect(page.getByRole("heading", { name: /Approved facts/ })).toBeVisible();
+  await page.getByRole("link", { name: "Continue" }).click();
 
   // Step 5: address + deploy.
   const slugInput = page.getByLabel("Site address");

@@ -35,7 +35,15 @@ export async function signUpAndVerify(page: Page, email: string, name = "Test Ow
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(E2E_PASSWORD);
-  await page.getByRole("button", { name: "Create account" }).click();
+  // Better Auth limits sign-ups to 3 per 10 s per IP (kept on purpose). If the suite
+  // trips it, wait out the window and retry like a patient user would.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.getByRole("button", { name: "Create account" }).click();
+    const limited = page.getByText("Too many attempts");
+    await Promise.race([page.waitForURL(/\/verify-email/), limited.waitFor({ state: "visible" })]);
+    if (!(await limited.isVisible())) break;
+    await page.waitForTimeout(11_000);
+  }
   await expect(page).toHaveURL(/\/verify-email/);
 
   const link = await readEmailLink(email, /https?:\/\/\S+\/api\/auth\/verify-email\?\S+/);
