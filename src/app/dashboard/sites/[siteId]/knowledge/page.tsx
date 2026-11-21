@@ -4,9 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { SiteTabs } from "@/components/dashboard/site-tabs";
 import { KnowledgeSection } from "@/components/knowledge/knowledge-section";
 import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
+import { countQuestionsByStatus } from "@/lib/db/queries/inbox";
 import { getEditableSite } from "@/lib/db/queries/site-builder";
 import { isUuid } from "@/lib/sites/slug";
 
@@ -38,6 +40,7 @@ async function Knowledge({ params }: Props) {
   if (!isUuid(siteId)) notFound();
   const site = await getEditableSite(getDb(), user.id, siteId);
   if (!site) notFound();
+  const counts = await countQuestionsByStatus(getDb(), site.id);
   return (
     <>
       <h1 className="mt-4 mb-6 text-2xl font-semibold tracking-tight">
@@ -46,6 +49,7 @@ async function Knowledge({ params }: Props) {
           {site.name}
         </span>
       </h1>
+      <SiteTabs siteId={site.id} current="knowledge" openQuestions={counts.open} />
       <KnowledgeSection ownerId={user.id} siteId={site.id} />
     </>
   );

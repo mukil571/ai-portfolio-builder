@@ -113,16 +113,21 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
         ) : (
           <span className="text-muted-foreground">Not published</span>
         )}
-        {site.openQuestions > 0 ? (
-          <span
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--brand-from)]/15 px-2 py-0.5 text-xs font-medium text-[var(--brand-from)]"
-            title="Unanswered visitor questions"
-          >
-            <MessageCircleQuestion className="size-3.5" aria-hidden="true" />
-            {site.openQuestions}
-            <span className="sr-only">unanswered questions</span>
+        <Link
+          href={`/dashboard/sites/${site.id}/questions`}
+          className={
+            site.openQuestions > 0
+              ? "inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--brand-from)]/15 px-2 py-0.5 text-xs font-medium text-[var(--brand-from)] hover:bg-[var(--brand-from)]/25"
+              : "inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          }
+          title="Visitor questions your assistant couldn't answer"
+        >
+          <MessageCircleQuestion className="size-3.5" aria-hidden="true" />
+          {site.openQuestions > 0 ? site.openQuestions : "Questions"}
+          <span className="sr-only">
+            {site.openQuestions > 0 ? " unanswered questions" : ""} for {site.name}
           </span>
-        ) : null}
+        </Link>
       </div>
     </article>
   );
