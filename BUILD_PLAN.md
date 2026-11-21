@@ -66,7 +66,7 @@ Legend: `[ ]` todo · `[x]` done
 - [x] Step 4: placeholder for knowledge step (built in Phase 4)
 - [x] Step 5: slug picker with live availability check (format, reserved words, taken; race-safe), preview, **Deploy** button
 - [x] Site appears on dashboard with live link (+ Edit / Preview links)
-- [ ] Live verification on Vercel (needs push; image upload needs a Vercel Blob store)
+- [x] Live verification on Vercel: owner created a site through the wizard, uploaded a hero photo (Vercel Blob) and published it at `/site/<slug>`
 
 **Done when:** a new user completes the wizard in under 5 minutes and the site is live at `/site/[slug]`; slug collisions and reserved words handled.
 
@@ -186,6 +186,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-21 (Phase 3): Phase 3 done. Vercel Blob store connected (`BLOB_READ_WRITE_TOKEN`); live upload + publish verified by the owner. `/api/uploads` rejects malformed bodies with 400 and logged-out requests with 403.
 
 - 2026-11-17 (Phase 3): Wizard = `/dashboard/new` (steps 1-2, client) -> draft site created with placeholder slug `draft-<random>` (prefix reserved) + default sections per kind + `ai_settings` (mode none) -> `/dashboard/sites/[id]/setup/{content,knowledge,publish}`. Slug chosen at publish; `publishSite` catches unique-violation races. Publish and edits to a published site call `updateTag(siteCacheTag(slug))` (old slug too).
 - 2026-11-17 (Phase 3): Autosave stores work-in-progress section content as typed (shape/size-checked, 50 KB cap); the strict section schema runs at render time and decides what shows. All builder queries are owner-scoped and PGlite-tested (`site-builder.test.ts`).
