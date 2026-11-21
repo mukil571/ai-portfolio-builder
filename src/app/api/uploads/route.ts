@@ -9,6 +9,12 @@ import { IMAGE_CONTENT_TYPES, MAX_IMAGE_BYTES, siteUploadPrefix } from "@/lib/up
 
 const clientPayloadSchema = z.object({ siteId: z.uuid() });
 
+/** Only token requests are accepted (no onUploadCompleted callback is configured). */
+const uploadBodySchema = z.looseObject({
+  type: z.literal("blob.generate-client-token"),
+  payload: z.looseObject({ pathname: z.string().max(512) }),
+});
+
 class UploadDenied extends Error {}
 
 /**
@@ -27,7 +33,9 @@ export async function POST(request: Request): Promise<Response> {
 
   let body: HandleUploadBody;
   try {
-    body = (await request.json()) as HandleUploadBody;
+    const parsed = uploadBodySchema.safeParse(await request.json());
+    if (!parsed.success) throw new Error("bad body");
+    body = parsed.data as unknown as HandleUploadBody;
   } catch {
     return Response.json({ error: "Invalid upload request." }, { status: 400 });
   }
