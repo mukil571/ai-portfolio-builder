@@ -75,13 +75,14 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 4 — Knowledge base
 **Goal:** owners can teach the bot facts.
 
-- [ ] Add text fact (title/question + answer), edit, delete, optional expiry, visibility
-- [ ] File upload (PDF, DOCX, TXT): parse server-side → chunk → propose **fact cards** for owner review (nothing is trusted until approved)
-- [ ] Paste resume/LinkedIn text → proposed facts (LLM extraction) → review screen
-- [ ] Embedding pipeline with the fixed platform embedding model; store vectors in pgvector
-- [ ] Retrieval function: top-k facts for a site + similarity score
-- [ ] Knowledge Base tab in site workspace; wizard step 4 wired up
-- [ ] Wizard section data auto-seeds starter facts (owner reviews and approves)
+- [x] Add text fact (title/question + answer), edit, delete, optional expiry, visibility
+- [x] File upload: **TXT only for now** (owner's choice; PDF/DOCX deferred, would need `unpdf` + `mammoth`). Parsed in memory, original not kept → proposed fact cards for review
+- [x] Paste resume/LinkedIn text → proposed facts (Gemini 3.5 Flash extraction) → review screen (Approve / Edit / Reject)
+- [x] Embedding pipeline with the fixed platform model (gemini-embedding-001, 768 dims); vectors stored on approve/edit; "Retry indexing" when unavailable
+- [x] Retrieval function: top-k facts for a site + cosine similarity score (`lib/knowledge/retrieval.ts`)
+- [x] Knowledge Base tab (`/dashboard/sites/[id]/knowledge`, linked from site cards); wizard step 4 wired up
+- [x] Wizard section data seeds starter facts on request ("Suggest from my site content"; owner reviews and approves)
+- [ ] Live verification on Vercel (needs `GOOGLE_GENERATIVE_AI_API_KEY` in Vercel for suggestions + searchable facts)
 
 **Done when:** adding/editing/deleting a fact updates retrieval; unit tests cover retrieval ranking and tenant isolation (site A never retrieves site B's facts).
 
@@ -186,6 +187,11 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-21 (Phase 4): Knowledge files are TXT-only for now (no new parser packages); originals are not stored (`knowledge_files.storage_key` now nullable, migration 0002). Extraction model `gemini-3.5-flash` on the same platform Google key as embeddings; source text is wrapped as untrusted data, output is Zod-validated, and every suggestion is PROPOSED (never retrievable until approved).
+- 2026-11-21 (Phase 4): Retrieval gate = site_id + approved + public + not expired + embedded with the current model, exact cosine `<=>`. Editing a fact's wording drops its embedding before re-indexing, so a stale vector is never served. Owner-written facts are approved immediately; facts without an embedding show "Not searchable yet" with a retry.
+- 2026-11-21 (Phase 4): "Private" visibility means stored but not told to visitors (Phase 6 will use it for answer-only-to-the-asker). Starter facts from wizard content are derived without AI and also arrive as proposals.
+- 2026-11-21 (Phase 4): E2E runs with one worker and the signup helper waits out Better Auth's 3-sign-ups-per-10s limit, which stays enabled.
 
 - 2026-11-21 (Phase 3): Phase 3 done. Vercel Blob store connected (`BLOB_READ_WRITE_TOKEN`); live upload + publish verified by the owner. `/api/uploads` rejects malformed bodies with 400 and logged-out requests with 403.
 
