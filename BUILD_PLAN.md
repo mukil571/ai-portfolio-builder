@@ -113,12 +113,12 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 6 — Questions inbox and the learning loop
 **Goal:** close the loop: owner answers → AI learns → visitor notified.
 
-- [ ] Questions Inbox tab: sorted by Asked count/recency, status filters (open, answered, ignored)
-- [ ] Answer panel with **AI-drafted suggestion** (from existing facts), owner edits and approves, choose public/private-to-asker
-- [ ] Approving creates a `knowledge_fact` (embedded) and marks question answered; merged duplicates all resolved
-- [ ] Owner notifications: instant email + daily digest option
-- [ ] Visitor "answered" email via Resend
-- [ ] Ignore/merge/delete questions
+- [x] Questions Inbox tab: sorted by Asked count/recency, status filters (open, answered, ignored)
+- [x] Answer panel with **AI-drafted suggestion** (from existing facts), owner edits and approves, choose public/private-to-asker
+- [x] Approving creates a `knowledge_fact` (embedded) and marks question answered; merged duplicates all resolved
+- [x] Owner notifications: instant email + daily digest option
+- [x] Visitor "answered" email via Resend
+- [x] Ignore/merge/delete questions
 
 **Done when:** e2e test: visitor asks unknown → appears in inbox with count → owner answers → a second visitor gets that answer instantly → first visitor gets email.
 
@@ -189,6 +189,12 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 6): Inbox = `/dashboard/sites/[id]/questions` (tabs with Knowledge Base). Lists top-level questions only; merged questions become hidden children (`merged_into_id`) whose counts and waiting visitors move to the target, and answering the target answers them all. Delete removes the question, its children and their un-notified leads; the answer fact stays.
+- 2026-11-22 (Phase 6): Approving an answer creates an APPROVED fact (`source = inbox`, `source_question_id`) in one transaction with the status change, then embeds it and emails waiting visitors once each (`leads.notified_at`). "Only the people who asked" = private fact: emailed, never retrieved by chat.
+- 2026-11-22 (Phase 6): AI suggestion drafts from retrieved approved public facts only (score >= 0.45); a draft that cites no retrieved fact is dropped. It is shown only to the owner, who edits and approves it.
+- 2026-11-22 (Phase 6): Owner emails per site (`sites.question_notify`: instant default, daily, off). Instant = one email per NEW question, claimed atomically via `unanswered_questions.owner_notified_at` and sent with `after()` so the visitor reply isn't delayed. Daily digest = Vercel Cron `0 8 * * *` UTC -> `/api/cron/digest`, which refuses requests without `Authorization: Bearer $CRON_SECRET`. Migration `0003` marks existing questions as already notified (no backlog digest).
+- 2026-11-22 (Phase 6): Known edge case (not changed, needs owner approval since it touches the Golden Rule gate): the "numbers must come from facts" check also rejects digits from the owner's own name if the model repeats it (e.g. "Studio 54"), so such answers fall back to "I don't have that yet". The e2e uses a digit-free owner name.
 
 - 2026-11-22 (Phase 5): Phase 5 done. Live chat verified by the owner (answer + badge, unknown + email capture, off-topic redirect).
 
