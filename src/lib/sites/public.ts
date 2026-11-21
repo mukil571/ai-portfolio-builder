@@ -3,6 +3,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 
 import { getDb } from "@/lib/db";
+import { assistantEnabledFor, ownerDisplayName } from "@/lib/db/queries/chat";
 import { getPublishedSiteBySlug } from "@/lib/db/queries/sites";
 
 import { isValidSlug, siteCacheTag } from "./slug";
@@ -20,6 +21,13 @@ export async function getPublicSiteView(slug: string): Promise<SiteView | null> 
   cacheLife("hours");
 
   if (!isValidSlug(slug)) return null;
-  const row = await getPublishedSiteBySlug(getDb(), slug);
-  return row ? toSiteView(row.site, row.sections) : null;
+  const db = getDb();
+  const row = await getPublishedSiteBySlug(db, slug);
+  if (!row) return null;
+  const view = toSiteView(row.site, row.sections);
+  const enabled = await assistantEnabledFor(db, [row.site.id]);
+  if (enabled.has(row.site.id)) {
+    view.assistant = { owner: await ownerDisplayName(db, row.site.id, row.site.name) };
+  }
+  return view;
 }

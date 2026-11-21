@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 
+import { ChatWidget } from "@/components/chat/chat-widget";
 import { SectionView, sectionTitles } from "@/components/sections";
 import type { SiteView } from "@/lib/sites/types";
 import type { SectionType } from "@/lib/validation/sections";
@@ -106,6 +107,7 @@ export function MinimalMonoSite({ site }: { site: SiteView }) {
           </p>
         </div>
       </footer>
+      {site.assistant ? <ChatWidget slug={site.slug} owner={site.assistant.owner} /> : null}
     </div>
   );
 }

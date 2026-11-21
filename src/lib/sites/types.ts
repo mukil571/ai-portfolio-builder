@@ -10,4 +10,6 @@ export type SiteView = {
   theme: SiteTheme;
   seo: SiteSeo;
   sections: RenderableSection[];
+  /** Set only on the live public page when the owner enabled the assistant. */
+  assistant?: { owner: string };
 };
