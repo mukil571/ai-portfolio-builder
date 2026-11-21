@@ -91,16 +91,18 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 5 — Chat widget and AI pipeline (the core)
 **Goal:** the visitor chat honors the Golden Rule.
 
-- [ ] Provider factory using Vercel AI SDK (OpenAI, Anthropic, Google) + platform key for dev
-- [ ] `/api/chat` streaming endpoint with: input validation, rate limit, injection filter
-- [ ] Intent classification: `owner_fact | general_tech | off_topic | unknown`
-- [ ] Retrieval + **grounding gate** (threshold tuned with tests)
-- [ ] Answer generation restricted to retrieved facts, returns fact IDs for source badge
-- [ ] Off-topic polite redirect; general-tech only when `allowGeneralAnswers` is on, labelled
-- [ ] `record_unanswered_question` tool: embed → semantic dedup → insert or increment `askedCount`
-- [ ] Chat widget UI: floating button, streaming messages, source badges, "Email me when answered" capture (stores lead/notify email), themed per template
-- [ ] Conversations + messages persisted
-- [ ] "AI not configured" state when no key/plan
+- [x] Provider via Vercel AI SDK + platform Google key (`gemini-3.5-flash-lite`); OpenAI/Anthropic/own keys deferred to Phase 8 (per-site "Enable assistant (beta)" switch until then)
+- [x] `/api/chat` endpoint (NDJSON stream; reply is fully checked before streaming): Zod input validation, rate limits (20/min/IP, 300/h/site, Postgres-backed), injection flagging + framing stripped
+- [x] Intent classification: `owner_fact | general_tech | off_topic | unknown` (structured model output)
+- [x] Retrieval + **grounding gate** in code: threshold 0.55, cited ids must be retrieved, numbers must come from cited facts
+- [x] Answer generation restricted to retrieved facts, returns fact IDs for the "Verified by {owner}" source badge
+- [x] Off-topic polite redirect (fixed template); general-tech only when `allowGeneralAnswers` is on, labelled "General info — not from {owner}"
+- [x] Unanswered questions: embed → semantic dedup (0.88) → insert or increment `askedCount`
+- [x] Chat widget UI: floating button, progressive messages, source badges, "Email me when answered" (stores lead), themed via the template's `--site-*` tokens
+- [x] Conversations + messages persisted (hashed IP, anonymous visitor cookie)
+- [x] "AI not configured" state when the assistant isn't enabled (widget hidden; API returns the template)
+- [x] Eval: 37 cases (`src/tests/eval/chat-eval-set.ts`) pass 37/37 on real models in two consecutive runs; zero invented owner facts
+- [ ] Live verification on Vercel (owner enables the assistant on a published site and chats)
 
 **Done when:** an eval test set (at least 30 questions: known, unknown, off-topic, injection attempts, paraphrased duplicates) passes; the bot never invents an owner fact in any test.
 
@@ -187,6 +189,11 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-21 (Phase 5): Platform chat + extraction model switched from `gemini-3.5-flash` to `gemini-3.5-flash-lite` (owner's choice): the free-tier quota for 3.5 Flash was exhausted (429). One config line each (`chat-config.ts`, `models.ts`).
+- 2026-11-21 (Phase 5): Grounding rules approved (`docs/chat-grounding.md`). The model only proposes; code decides. Non-answers are fixed templates. Prompt probes are redirected without calling a model. Messages flagged as injection are reduced to their genuine final question before retrieval/model (`genuineQuestion`), so injected "facts" and fake SYSTEM lines never reach the model.
+- 2026-11-21 (Phase 5): Eval history: run 1 33/37 (4 injection cases over-cautious, none invented facts) → prompt fix; run 2 35/37 (I3 + the I2 check bug below) → prompt rule + check fix; run 3 37/37; run 4 failed I4 (flaky injection handling) and U6 (Google 503 outage, not a bot error) → framing-stripping fix + retry on 503; runs 5 and 6 37/37. One eval check was corrected: I2's forbidden "500 per hour" matched inside the correct "2,500 per hour"; it now forbids "₹500".
+- 2026-11-21 (Phase 5): Until Phase 8, a site's assistant is enabled per site by its owner ("Enable assistant (beta)", platform key); off by default. `npm run eval` runs the real-model eval locally (needs the key in `.env.local`).
 
 - 2026-11-21 (Phase 4): Phase 4 done. `GOOGLE_GENERATIVE_AI_API_KEY` set in Vercel; live embedding + extraction verified by the owner. Open follow-up: PDF/DOCX upload (needs approval for `unpdf` + `mammoth`).
 
