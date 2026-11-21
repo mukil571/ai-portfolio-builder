@@ -41,8 +41,11 @@ function withBackoff<A extends unknown[], R>(fn: (...args: A) => Promise<R>) {
         return await fn(...args);
       } catch (error) {
         const msg = String((error as Error)?.message ?? error);
-        if (attempt < 6 && /429|rate|quota|exhausted|overloaded|503/i.test(msg)) {
-          await sleep(10_000 * (attempt + 1));
+        if (
+          attempt < 2 &&
+          /429|rate|quota|exhausted|overloaded|503|demand|unavailable/i.test(msg)
+        ) {
+          await sleep(15_000 * (attempt + 1));
           continue;
         }
         throw error;
