@@ -77,6 +77,8 @@ export const unansweredQuestions = pgTable(
     firstAskedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     lastAskedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     answeredAt: timestamp({ withTimezone: true }),
+    /** When the owner was emailed about this question (instant email or daily digest). */
+    ownerNotifiedAt: timestamp({ withTimezone: true }),
   },
   (t) => [
     // No ANN index: similarity is exact cosine (`<=>`) over one site's rows (see lib/knowledge/similarity.ts).

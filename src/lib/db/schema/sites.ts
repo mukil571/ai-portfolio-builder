@@ -17,6 +17,8 @@ import { users } from "./auth";
 
 export const siteKind = pgEnum("site_kind", ["portfolio", "business"]);
 export const siteStatus = pgEnum("site_status", ["draft", "published"]);
+/** How the owner hears about new unanswered visitor questions (Phase 6). */
+export const questionNotify = pgEnum("question_notify", ["instant", "daily", "off"]);
 export const sectionType = pgEnum("section_type", [
   "hero",
   "about",
@@ -57,6 +59,7 @@ export const sites = pgTable(
     status: siteStatus().notNull().default("draft"),
     theme: jsonb().$type<SiteTheme>().notNull().default({}),
     seo: jsonb().$type<SiteSeo>().notNull().default({}),
+    questionNotify: questionNotify().notNull().default("instant"),
     publishedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp({ withTimezone: true })
