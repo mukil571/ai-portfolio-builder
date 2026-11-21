@@ -17,7 +17,8 @@
     "db:migrate": "node scripts/migrate.mjs",
     "db:studio": "drizzle-kit studio",
     "vercel-build": "npm run db:migrate && npm run db:seed && next build",
-    "db:seed": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/seed-demo.ts"
+    "db:seed": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/seed-demo.ts",
+    "eval": "vitest run --config vitest.eval.config.mts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.121",
