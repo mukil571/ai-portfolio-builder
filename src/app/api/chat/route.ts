@@ -1,3 +1,5 @@
+import { after } from "next/server";
+
 import { chatConfig } from "@/lib/ai/chat-config";
 import { cleanMessage } from "@/lib/ai/guard";
 import { ChatUnavailableError, platformChatDeps } from "@/lib/ai/models-live";
@@ -13,6 +15,7 @@ import {
   saveExchange,
 } from "@/lib/db/queries/chat";
 import { knowledgeFacts } from "@/lib/db/schema";
+import { alertOwnerOfNewQuestion } from "@/lib/inbox/notify";
 import { chatRequestSchema } from "@/lib/validation/chat";
 
 import { and, eq, inArray } from "drizzle-orm";
@@ -137,6 +140,9 @@ export async function POST(request: Request): Promise<Response> {
         ? chatConfig.PLATFORM_CHAT_MODEL
         : null,
   });
+
+  // Owner email for a NEW question (instant sites); runs after the reply is sent.
+  if (unansweredQuestionId) after(() => alertOwnerOfNewQuestion(db, unansweredQuestionId));
 
   const sources = factIds.length
     ? await db

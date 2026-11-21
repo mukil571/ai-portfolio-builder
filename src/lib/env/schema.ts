@@ -25,6 +25,8 @@ export const serverEnvSchema = z.object({
   BLOB_READ_WRITE_TOKEN: optionalSecret,
   /** Platform Google AI key for the fixed embedding model. Optional until Phase 4. */
   GOOGLE_GENERATIVE_AI_API_KEY: optionalSecret,
+  /** Vercel Cron sends it as a Bearer token; the daily digest refuses requests without it. */
+  CRON_SECRET: optionalSecret,
   /** "1" on Vercel (build and runtime); unset on a local machine. */
   VERCEL: optionalSecret,
   /** Vercel system vars (hostnames, no protocol); set automatically on Vercel. */
