@@ -82,7 +82,7 @@ Legend: `[ ]` todo · `[x]` done
 - [x] Retrieval function: top-k facts for a site + cosine similarity score (`lib/knowledge/retrieval.ts`)
 - [x] Knowledge Base tab (`/dashboard/sites/[id]/knowledge`, linked from site cards); wizard step 4 wired up
 - [x] Wizard section data seeds starter facts on request ("Suggest from my site content"; owner reviews and approves)
-- [ ] Live verification on Vercel (needs `GOOGLE_GENERATIVE_AI_API_KEY` in Vercel for suggestions + searchable facts)
+- [x] Live verification on Vercel: owner added a searchable fact, got AI suggestions from pasted text, and approved one (Google AI key configured)
 
 **Done when:** adding/editing/deleting a fact updates retrieval; unit tests cover retrieval ranking and tenant isolation (site A never retrieves site B's facts).
 
@@ -187,6 +187,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-21 (Phase 4): Phase 4 done. `GOOGLE_GENERATIVE_AI_API_KEY` set in Vercel; live embedding + extraction verified by the owner. Open follow-up: PDF/DOCX upload (needs approval for `unpdf` + `mammoth`).
 
 - 2026-11-21 (Phase 4): Knowledge files are TXT-only for now (no new parser packages); originals are not stored (`knowledge_files.storage_key` now nullable, migration 0002). Extraction model `gemini-3.5-flash` on the same platform Google key as embeddings; source text is wrapped as untrusted data, output is Zod-validated, and every suggestion is PROPOSED (never retrievable until approved).
 - 2026-11-21 (Phase 4): Retrieval gate = site_id + approved + public + not expired + embedded with the current model, exact cosine `<=>`. Editing a fact's wording drops its embedding before re-indexing, so a stale vector is never served. Owner-written facts are approved immediately; facts without an embedding show "Not searchable yet" with a retry.
