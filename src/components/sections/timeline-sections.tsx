@@ -26,7 +26,7 @@ export function ExperienceSection({
                 <ul className="mt-3 space-y-1.5 text-sm text-site-muted">
                   {item.highlights.map((h) => (
                     <li key={h} className="flex gap-2">
-                      <span aria-hidden="true" className="text-site-accent">
+                      <span aria-hidden="true" className="text-site-accent-ink">
                         —
                       </span>
                       {h}

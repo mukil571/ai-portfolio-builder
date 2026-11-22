@@ -2,11 +2,13 @@ import type { CSSProperties } from "react";
 
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { SectionView, sectionTitles } from "@/components/sections";
+import { resolveTheme } from "@/lib/sites/templates";
 import type { SiteView } from "@/lib/sites/types";
 import type { SectionType } from "@/lib/validation/sections";
 
-import { SITE_MODE_KEY } from "../mode-key";
-import { ModeToggle } from "../mode-toggle";
+import { siteFontVariables } from "./fonts";
+import { SITE_MODE_KEY } from "./mode-key";
+import { ModeToggle } from "./mode-toggle";
 
 const NAV_TYPES: SectionType[] = [
   "about",
@@ -19,14 +21,16 @@ const NAV_TYPES: SectionType[] = [
 const ROOT_ID = "site-root";
 
 /**
- * "Minimal Mono" (portfolio): monochrome surfaces, Geist + Geist Mono, one owner accent,
- * numbered sections. Renders only the sections the planner kept.
+ * Shared frame for every template. Templates differ by CSS only (src/app/site-templates.css),
+ * keyed on data-template / data-font / data-mode, over the same semantic markup, so
+ * switching templates never touches content. Renders only the sections the planner kept.
  */
-export function MinimalMonoSite({ site }: { site: SiteView }) {
-  const defaultMode = site.theme.defaultMode ?? "light";
-  const style = site.theme.accent
-    ? ({ "--site-accent": site.theme.accent } as CSSProperties)
-    : undefined;
+export function SiteShell({ site }: { site: SiteView }) {
+  const look = resolveTheme(site.template, site.theme);
+  const style = {
+    "--site-accent": look.accent,
+    "--site-accent-fg": look.accentForeground,
+  } as CSSProperties;
   const hero = site.sections.find((s) => s.type === "hero");
   const displayName = (hero?.type === "hero" && hero.content.name) || site.name;
   const present = new Set(site.sections.map((s) => s.type));
@@ -36,10 +40,11 @@ export function MinimalMonoSite({ site }: { site: SiteView }) {
   return (
     <div
       id={ROOT_ID}
-      data-template="minimal-mono"
-      data-mode={defaultMode}
+      data-template={site.template}
+      data-font={look.fontPair}
+      data-mode={look.mode}
       style={style}
-      className="site-root flex min-h-dvh flex-col font-sans antialiased"
+      className={`site-root ${siteFontVariables} flex min-h-dvh flex-col font-sans antialiased`}
     >
       {/* Apply a returning visitor's saved mode before paint (static string, no user data). */}
       <script
@@ -53,13 +58,13 @@ export function MinimalMonoSite({ site }: { site: SiteView }) {
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-40 border-b border-site-border bg-site-bg/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
-          <a href="#home" className="truncate font-mono text-sm font-medium">
+      <header className="site-header sticky top-0 z-40 border-b border-site-border bg-site-bg/85 backdrop-blur">
+        <div className="site-header-inner mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
+          <a href="#home" className="site-brand truncate font-mono text-sm font-medium">
             {displayName}
           </a>
           <div className="flex items-center gap-1 sm:gap-4">
-            <nav aria-label="Sections" className="hidden sm:block">
+            <nav aria-label="Sections" className="site-nav hidden sm:block">
               <ul className="flex items-center gap-5 text-sm text-site-muted">
                 {nav.map((t) => (
                   <li key={t}>
@@ -83,7 +88,7 @@ export function MinimalMonoSite({ site }: { site: SiteView }) {
         </div>
       </header>
 
-      <main id="main" className="flex-1">
+      <main id="main" className="site-main flex-1">
         {site.sections.map((section) => (
           <SectionView
             key={section.type}
@@ -93,7 +98,7 @@ export function MinimalMonoSite({ site }: { site: SiteView }) {
         ))}
       </main>
 
-      <footer className="border-t border-site-border">
+      <footer className="site-footer border-t border-site-border">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-8 text-xs text-site-muted sm:flex-row sm:justify-between sm:px-6">
           <p className="font-mono">© {displayName}</p>
           <p>

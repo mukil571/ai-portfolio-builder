@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./site-templates.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,6 +13,8 @@
   --color-site-border: var(--site-border);
   --color-site-card: var(--site-card);
   --color-site-accent: var(--site-accent);
+  --color-site-accent-ink: var(--site-accent-ink);
+  --color-site-accent-fg: var(--site-accent-fg);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -146,31 +149,4 @@
   }
 }
 
-/*
- * Site templates. Published sites render inside .site-root[data-template][data-mode]
- * and only use --site-* tokens, so they are independent of the dashboard's dark theme.
- * --site-accent is set per site (owner's accent color) via an inline style.
- */
-.site-root {
-  --site-accent: #2f6feb;
-  background: var(--site-bg);
-  color: var(--site-fg);
-}
-
-.site-root[data-template="minimal-mono"][data-mode="light"] {
-  color-scheme: light;
-  --site-bg: #fafaf9;
-  --site-fg: #18181b;
-  --site-muted: #5b5b66;
-  --site-border: #e4e4e7;
-  --site-card: #ffffff;
-}
-
-.site-root[data-template="minimal-mono"][data-mode="dark"] {
-  color-scheme: dark;
-  --site-bg: #0c0c0e;
-  --site-fg: #ededf0;
-  --site-muted: #a1a1aa;
-  --site-border: #26262b;
-  --site-card: #141417;
-}
+/* Site templates live in ./site-templates.css. */

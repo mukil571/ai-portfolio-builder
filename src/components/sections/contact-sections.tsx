@@ -85,7 +85,7 @@ export function SocialSection({
             <li key={l.url}>
               <SiteLink
                 href={l.url}
-                className="inline-flex items-center gap-2 rounded-lg border border-site-border px-3 py-2 text-sm transition-colors hover:border-site-fg"
+                className="site-chip inline-flex items-center gap-2 rounded-lg border border-site-border px-3 py-2 text-sm transition-colors hover:border-site-fg"
               >
                 <Icon className="size-4" aria-hidden="true" />
                 {l.label ?? platformLabels[l.platform]}

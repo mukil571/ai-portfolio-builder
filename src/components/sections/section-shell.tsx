@@ -22,20 +22,24 @@ export function SectionShell({
     <section
       id={id}
       aria-labelledby={headingId}
-      className="scroll-mt-20 border-t border-site-border py-16 sm:py-24"
+      data-section={id}
+      className="site-section scroll-mt-20 border-t border-site-border py-16 sm:py-24"
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+      <div className="site-section-inner mx-auto max-w-5xl px-4 sm:px-6">
         <FadeIn>
-          <div className="grid gap-8 md:grid-cols-[12rem_1fr] md:gap-12">
-            <div>
-              <p className="font-mono text-xs tracking-widest text-site-muted uppercase">
+          <div className="site-section-grid grid gap-8 md:grid-cols-[12rem_1fr] md:gap-12">
+            <div className="site-section-head">
+              <p className="site-section-index font-mono text-xs tracking-widest text-site-muted uppercase">
                 {String(index).padStart(2, "0")}
               </p>
-              <h2 id={headingId} className="mt-2 text-xl font-semibold tracking-tight">
+              <h2
+                id={headingId}
+                className="site-section-title mt-2 text-xl font-semibold tracking-tight"
+              >
                 {title}
               </h2>
             </div>
-            <div className="min-w-0">{children}</div>
+            <div className="site-section-body min-w-0">{children}</div>
           </div>
         </FadeIn>
       </div>
@@ -46,7 +50,7 @@ export function SectionShell({
 /** Small mono tag/pill used across sections. */
 export function Tag({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-md border border-site-border px-2 py-0.5 font-mono text-xs text-site-muted">
+    <span className="site-tag rounded-md border border-site-border px-2 py-0.5 font-mono text-xs text-site-muted">
       {children}
     </span>
   );

@@ -4,7 +4,7 @@ import type { SectionContent } from "@/lib/validation/sections";
 
 import { SectionShell, sectionTitles, SiteLink, Tag } from "./section-shell";
 
-const card = "rounded-xl border border-site-border bg-site-card p-5";
+const card = "site-card rounded-xl border border-site-border bg-site-card p-5";
 
 export function ProjectsSection({
   content,
@@ -124,7 +124,10 @@ export function PricingSection({
               <ul className="mt-5 space-y-2 text-sm">
                 {plan.features.map((f) => (
                   <li key={f} className="flex gap-2">
-                    <Check className="mt-0.5 size-4 shrink-0 text-site-accent" aria-hidden="true" />
+                    <Check
+                      className="mt-0.5 size-4 shrink-0 text-site-accent-ink"
+                      aria-hidden="true"
+                    />
                     {f}
                   </li>
                 ))}

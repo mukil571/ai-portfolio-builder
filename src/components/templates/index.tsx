@@ -1,11 +1,8 @@
 import type { SiteView } from "@/lib/sites/types";
 
-import { MinimalMonoSite } from "./minimal-mono";
+import { SiteShell } from "./site-shell";
 
-/** Template registry: themes over the shared section components. */
+/** Template registry: every template is a CSS theme over the shared shell and sections. */
 export function SiteTemplate({ site }: { site: SiteView }) {
-  switch (site.template) {
-    case "minimal-mono":
-      return <MinimalMonoSite site={site} />;
-  }
+  return <SiteShell site={site} />;
 }
