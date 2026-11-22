@@ -141,11 +141,11 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 8 — AI and API settings, fake plans
 **Goal:** the two AI modes work.
 
-- [ ] AI & API tab: choose mode (platform plan vs own key), choose provider/model
-- [ ] BYOK: encrypted key storage (AES-256-GCM), "Test key" button, show only last 4 chars, delete key
-- [ ] Fake plans (Free, Starter, Pro) with monthly message quotas; metering in `usage_logs`; usage meter UI; quota-exceeded graceful message
-- [ ] Free plan + no key → "AI not configured" with CTA to add a key
-- [ ] Plan selection UI that simulates upgrade (no payment)
+- [x] AI & API tab: choose mode (platform plan vs own key), choose provider/model
+- [x] BYOK: encrypted key storage (AES-256-GCM), "Test key" button, show only last 4 chars, delete key
+- [x] Fake plans (Free, Starter, Pro) with monthly message quotas; metering in `usage_logs`; usage meter UI; quota-exceeded graceful message
+- [x] Free plan + no key → "AI not configured" with CTA to add a key
+- [x] Plan selection UI that simulates upgrade (no payment)
 
 **Done when:** keys never appear in logs/responses (test it); switching provider works; quota enforcement tested.
 
@@ -189,6 +189,11 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 8): Providers for own keys: Google, OpenAI, Anthropic (`@ai-sdk/openai`, `@ai-sdk/anthropic` added with the owner's OK). Owners pick from a short tested model list (`lib/ai/model-catalog.ts`); anything else is refused, and a stored non-catalog model means "not configured". Embeddings, fact extraction and inbox suggestions always use the platform key (owner tools, not metered).
+- 2026-11-22 (Phase 8): Keys: AES-256-GCM (`lib/crypto/api-keys.ts`), random IV, site id as additional authenticated data (a ciphertext copied to another site won't decrypt), `key_version` 1, secret `API_KEY_ENCRYPTION_KEY` (32 bytes base64). Only last 4 shown. A key is saved only after a one-message test succeeds. Provider errors are reduced to a category (rejected/model/limited/unreachable) before logging or showing; a unit test captures all console output and asserts the key never appears.
+- 2026-11-22 (Phase 8): Deviation from the plan (owner's choice): Free includes 50 Loriyum-AI messages/month so existing sites keep working; Starter 1,000, Pro 10,000. Quota = platform-billed `usage_logs` chat messages per user per 30-day period (rolled forward lazily); own-key chats are logged but never counted. Over quota, visitors get a fixed template pointing to the site's contact details. Plan switches are simulated and keep the current period's usage (no resetting the counter by switching).
+- 2026-11-22 (Phase 8): Chat model choice (`lib/ai/chat-model.ts`): byok -> owner key + model; platform -> Loriyum key if under quota; anything broken -> "not configured", never a fallback to another key. The grounding gate and templates are identical for every model. The eval still runs on the platform model only (no owner keys available to test with).
 
 - 2026-11-22 (Phase 7): Phase 7 done. Template samples, the Design tab and a live template switch verified by the owner on production.
 
