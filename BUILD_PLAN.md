@@ -127,12 +127,12 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 7 — Remaining templates and customization
 **Goal:** every site looks attractive.
 
-- [ ] Portfolio: **Bento**, **Dark Dev**, **Editorial**
-- [ ] Business: **SaaS Launch**, **Studio**, **Local Pro**, **Product Spotlight**
-- [ ] Customization panel: accent color, font pair, section order, hero image, light/dark default
-- [ ] Switch templates without losing content
-- [ ] SEO polish (sitemap, OG image generation, meta defaults)
-- [ ] Template previews in the wizard use real sample data
+- [x] Portfolio: **Bento**, **Dark Dev**, **Editorial**
+- [x] Business: **SaaS Launch**, **Studio**, **Local Pro**, **Product Spotlight**
+- [x] Customization panel: accent color, font pair, section order, hero image, light/dark default
+- [x] Switch templates without losing content
+- [x] SEO polish (sitemap, OG image generation, meta defaults)
+- [x] Template previews in the wizard use real sample data
 
 **Done when:** all 8 templates pass Lighthouse 90+ (perf and a11y) on mobile; visual review of each at 390px and 1280px.
 
@@ -189,6 +189,12 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 7): Lighthouse (mobile, production build) on all 8 template samples: performance 92-97, accessibility 100, best practices 100. SEO shows 63 there only because samples are deliberately `noindex`; a real published site scored SEO 100. Visual review done at 390px and 1280px.
+- 2026-11-22 (Phase 7): Templates = one shared shell + section components with semantic hook classes (`site-hero`, `site-section`, `site-card`, …); each template is CSS only (`src/app/site-templates.css`, keyed on `data-template`, `data-font`, `data-mode`). Switching templates only changes `sites.template`, so content can't be lost. Bento is a wrapping flex grid of tiles that pair up when neighbours exist.
+- 2026-11-22 (Phase 7): `sites.theme` = `{ accent?, fontPair?, defaultMode? }`; every unset field falls back to the template's default (so switching templates adopts the new look unless the owner chose otherwise). Text on the accent is black/white by luminance; accent used as text is `--site-accent-ink` (accent mixed toward the foreground) for contrast. Six curated font pairs via `next/font/google`, `preload: false` so a site only downloads the faces it uses. Hero image customization edits the hero section's image (no duplicate field).
+- 2026-11-22 (Phase 7): Design tab (`/dashboard/sites/[id]/design`): template, accent (presets + custom), fonts, default mode, SEO title/description, hero image and section order (instant saves), with a scaled live preview. Reordering sections now also refreshes a published site's cache (was missing).
+- 2026-11-22 (Phase 7): SEO: `sitemap.xml` (home + published sites, hourly cache), `robots.txt` (blocks dashboard, preview, api, template samples), per-site Open Graph image via `next/og` in the site's colours, `summary_large_image` Twitter cards. Template samples (`/templates/[id]`) use a portfolio sample or a new business sample by kind, with template defaults.
 
 - 2026-11-22 (Phase 6): Phase 6 done. Live inbox verified by the owner (questions listed with counts, public + private answers approved). Visitor/owner emails are refused by Resend's test sender (it only delivers to the Resend account's own address); they will work once a sending domain is verified and `EMAIL_FROM` updated. No resend button for leads that failed meanwhile (owner's choice).
 
