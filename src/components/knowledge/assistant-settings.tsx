@@ -45,7 +45,7 @@ export function AssistantSettings({
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Shows a chat on your published site that answers only from your approved facts. Uses
-            Loriyum&apos;s AI for now; your own key and plans come later.
+            Loriyum&apos;s AI by default; switch to your own key in the AI &amp; API tab.
           </p>
           {!platformReady ? (
             <p className="mt-2 text-sm text-amber-200">

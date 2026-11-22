@@ -1,8 +1,8 @@
-import { LayoutGrid } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 
+import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { UserMenu, UserMenuSkeleton } from "@/components/dashboard/user-menu";
 import { Logo } from "@/components/marketing/logo";
 
@@ -22,16 +22,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             Loriyum
           </Link>
         </div>
-        <nav aria-label="Dashboard" className="px-3 pb-3 md:flex-1 md:pb-0">
-          <Link
-            href="/dashboard"
-            aria-current="page"
-            className="flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2 text-sm font-medium text-foreground"
-          >
-            <LayoutGrid className="size-4 text-[var(--brand-from)]" aria-hidden="true" />
-            My Websites
-          </Link>
-        </nav>
+        <DashboardNav />
         <div className="hidden border-t border-white/5 p-4 md:block">
           <Suspense fallback={<UserMenuSkeleton />}>
             <UserMenu />

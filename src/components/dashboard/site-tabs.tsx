@@ -1,4 +1,4 @@
-import { BookOpenCheck, MessageCircleQuestion, Palette, PenLine } from "lucide-react";
+import { BookOpenCheck, Bot, MessageCircleQuestion, Palette, PenLine } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "cn";
@@ -10,7 +10,7 @@ export function SiteTabs({
   openQuestions,
 }: {
   siteId: string;
-  current: "content" | "design" | "knowledge" | "questions";
+  current: "content" | "design" | "knowledge" | "questions" | "ai";
   openQuestions?: number;
 }) {
   const tabs = [
@@ -33,6 +33,7 @@ export function SiteTabs({
       href: `/dashboard/sites/${siteId}/questions`,
       Icon: MessageCircleQuestion,
     },
+    { key: "ai", label: "AI & API", href: `/dashboard/sites/${siteId}/ai`, Icon: Bot },
   ] as const;
   return (
     <nav
