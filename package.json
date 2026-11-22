@@ -21,7 +21,9 @@
     "eval": "vitest run --config vitest.eval.config.mts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.107",
     "@ai-sdk/google": "^4.0.121",
+    "@ai-sdk/openai": "^4.0.122",
     "@base-ui/react": "^1.9.0",
     "@neon/config": "^1.14.1",
     "@neon/env": "^2.1.4",
