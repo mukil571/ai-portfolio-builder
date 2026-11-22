@@ -214,7 +214,10 @@ export async function createNotifyLead(
   return true;
 }
 
-/** Owner turns the assistant on/off (platform mode until Phase 8). Owner-scoped. */
+/**
+ * Owner turns the assistant on/off. On = the owner's own key when one is saved, otherwise
+ * Loriyum's AI (counted against the plan). Owner-scoped.
+ */
 export async function setAssistant(
   db: AppDb,
   ownerId: string,
@@ -222,24 +225,19 @@ export async function setAssistant(
   settings: { enabled: boolean; allowGeneralAnswers: boolean },
 ): Promise<{ slug: string } | null> {
   const [site] = await db
-    .select({ id: sites.id, slug: sites.slug })
+    .select({ id: sites.id, slug: sites.slug, keyLast4: aiSettings.apiKeyLast4 })
     .from(sites)
+    .leftJoin(aiSettings, eq(aiSettings.siteId, sites.id))
     .where(and(eq(sites.id, siteId), eq(sites.ownerId, ownerId)))
     .limit(1);
   if (!site) return null;
+  const mode = settings.enabled ? (site.keyLast4 ? "byok" : "platform") : "none";
   await db
     .insert(aiSettings)
-    .values({
-      siteId,
-      mode: settings.enabled ? "platform" : "none",
-      allowGeneralAnswers: settings.allowGeneralAnswers,
-    })
+    .values({ siteId, mode, allowGeneralAnswers: settings.allowGeneralAnswers })
     .onConflictDoUpdate({
       target: aiSettings.siteId,
-      set: {
-        mode: settings.enabled ? "platform" : "none",
-        allowGeneralAnswers: settings.allowGeneralAnswers,
-      },
+      set: { mode, allowGeneralAnswers: settings.allowGeneralAnswers },
     });
   return { slug: site.slug };
 }
@@ -258,7 +256,7 @@ export async function getAssistantSettings(
     .limit(1);
   if (!row) return null;
   return {
-    enabled: row.mode === "platform",
+    enabled: row.mode === "platform" || row.mode === "byok",
     allowGeneralAnswers: row.allowGeneralAnswers ?? false,
   };
 }
