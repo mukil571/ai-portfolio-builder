@@ -3,30 +3,40 @@ import Link from "next/link";
 
 import { FadeIn } from "@/components/fade-in";
 import { buttonVariants } from "@/components/ui/button";
+import { plans as planData } from "@/lib/plans/plans";
 
-// Teaser only: plans are simulated (no payments) and quotas are finalized in Phase 8.
+// Same numbers as the real (simulated) plans, so the landing page never over-promises.
+const fmt = (n: number) => n.toLocaleString("en");
 const plans = [
   {
-    name: "Free",
-    price: "$0",
-    blurb: "Bring your own AI key.",
-    points: ["1 published site", "Unlimited approved facts", "Questions inbox"],
+    name: planData.free.name,
+    price: planData.free.price,
+    blurb: "Try it, or bring your own AI key.",
+    points: [
+      `${fmt(planData.free.monthlyMessages)} Loriyum-AI messages / month`,
+      "Unlimited chats with your own AI key",
+      "Questions inbox and email alerts",
+    ],
   },
   {
-    name: "Starter",
-    price: "$9",
+    name: planData.starter.name,
+    price: planData.starter.price,
     blurb: "We provide the AI.",
-    points: ["3 published sites", "Included monthly AI messages", "Email alerts for new questions"],
+    points: [
+      `${fmt(planData.starter.monthlyMessages)} Loriyum-AI messages / month`,
+      "All 8 templates and custom colours",
+      "Conversations, analytics and CSV export",
+    ],
     featured: true,
   },
   {
-    name: "Pro",
-    price: "$19",
-    blurb: "For busy businesses.",
+    name: planData.pro.name,
+    price: planData.pro.price,
+    blurb: "For busy sites.",
     points: [
-      "10 published sites",
-      "More monthly AI messages",
-      "Conversation history & leads export",
+      `${fmt(planData.pro.monthlyMessages)} Loriyum-AI messages / month`,
+      "Everything in Starter",
+      "Room for several busy websites",
     ],
   },
 ];

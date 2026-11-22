@@ -42,7 +42,10 @@ function ActiveNav() {
 
 function NavLinks({ active }: { active: string | null }) {
   return (
-    <nav aria-label="Dashboard" className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-visible md:pb-0">
+    <nav
+      aria-label="Dashboard"
+      className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-visible md:pb-0"
+    >
       {items.map(({ href, label, Icon }) => (
         <Link
           key={href}

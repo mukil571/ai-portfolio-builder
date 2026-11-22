@@ -8,6 +8,7 @@ import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Logo } from "@/components/marketing/logo";
 import { PricingTeaser } from "@/components/marketing/pricing-teaser";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { TemplateGallery } from "@/components/marketing/template-gallery";
 import { buttonVariants } from "@/components/ui/button";
 
 export default function Home() {
@@ -80,6 +81,7 @@ export default function Home() {
 
         <HowItWorks />
         <Features />
+        <TemplateGallery />
         <PricingTeaser />
 
         <section id="get-started" className="scroll-mt-20 px-4 pb-24 sm:px-6 sm:pb-32">

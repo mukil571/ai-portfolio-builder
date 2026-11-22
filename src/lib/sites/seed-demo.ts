@@ -2,6 +2,7 @@
 // Creates/refreshes a PUBLISHED sample at /site/demo and a DRAFT at /site/demo-draft
 // owned by the account with `ownerEmail`. Never takes over a slug owned by someone else.
 // Runtime imports use explicit .ts extensions so Node type-stripping can run it directly.
+import { sampleBusinessSections, sampleBusinessSite } from "./sample-business.ts";
 import { sampleSections, sampleSite } from "./sample-data.ts";
 
 export type QueryFn = <R = Record<string, unknown>>(
@@ -9,9 +10,35 @@ export type QueryFn = <R = Record<string, unknown>>(
   params?: unknown[],
 ) => Promise<{ rows: R[] }>;
 
+const portfolio = {
+  kind: sampleSite.kind,
+  template: sampleSite.template,
+  theme: JSON.stringify(sampleSite.theme),
+  seo: JSON.stringify(sampleSite.seo),
+  sections: sampleSections,
+};
+const business = {
+  kind: sampleBusinessSite.kind,
+  template: "studio",
+  theme: JSON.stringify({}),
+  seo: JSON.stringify(sampleBusinessSite.seo),
+  sections: sampleBusinessSections,
+};
+
 const demos = [
-  { slug: "demo", status: "published", name: `${sampleSite.name} (sample)` },
-  { slug: "demo-draft", status: "draft", name: `${sampleSite.name} (draft sample)` },
+  { slug: "demo", status: "published", name: `${sampleSite.name} (sample)`, ...portfolio },
+  {
+    slug: "demo-draft",
+    status: "draft",
+    name: `${sampleSite.name} (draft sample)`,
+    ...portfolio,
+  },
+  {
+    slug: "demo-business",
+    status: "published",
+    name: `${sampleBusinessSite.name} (sample)`,
+    ...business,
+  },
 ] as const;
 
 /** Returns human-readable log lines; throws only on unexpected database errors. */
@@ -23,9 +50,6 @@ export async function seedDemoSites(query: QueryFn, ownerEmail: string): Promise
   );
   const ownerId = owner.rows[0]?.id;
   if (!ownerId) return ["No account with SEED_OWNER_EMAIL; sign up first. Skipping."];
-
-  const theme = JSON.stringify(sampleSite.theme);
-  const seo = JSON.stringify(sampleSite.seo);
 
   for (const demo of demos) {
     await query("begin");
@@ -52,7 +76,7 @@ export async function seedDemoSites(query: QueryFn, ownerEmail: string): Promise
                then coalesce(published_at, now()) else null end,
              updated_at = now()
            where id = $1::uuid`,
-          [siteId, demo.name, sampleSite.kind, sampleSite.template, demo.status, theme, seo],
+          [siteId, demo.name, demo.kind, demo.template, demo.status, demo.theme, demo.seo],
         );
         await query("delete from site_sections where site_id = $1::uuid", [siteId]);
       } else {
@@ -65,17 +89,17 @@ export async function seedDemoSites(query: QueryFn, ownerEmail: string): Promise
             ownerId,
             demo.name,
             demo.slug,
-            sampleSite.kind,
-            sampleSite.template,
+            demo.kind,
+            demo.template,
             demo.status,
-            theme,
-            seo,
+            demo.theme,
+            demo.seo,
           ],
         );
         siteId = inserted.rows[0]!.id;
       }
 
-      for (const section of sampleSections) {
+      for (const section of demo.sections) {
         await query(
           `insert into site_sections (site_id, type, position, content, is_visible)
            values ($1::uuid, $2::section_type, $3::int, $4::jsonb, $5::boolean)`,
