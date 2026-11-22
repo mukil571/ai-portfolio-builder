@@ -190,6 +190,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-22 (Phase 8): Phase 8 done. AI & API tab, own-key flow (with `API_KEY_ENCRYPTION_KEY` set in Vercel) and Plan & usage verified by the owner on production.
+
 - 2026-11-22: Dashboard speed: Better Auth session cookie cache (5 min, signed) so most requests skip the session DB lookup; `getCurrentUser` wrapped in React `cache()` (sidebar + page share one check); dashboard site pages run their queries in parallel. Trade-off accepted by the owner: a revoked session can stay valid on another device for up to 5 minutes. Not changed (owner's choice): Neon scale-to-zero cold starts and Vercel/Neon region placement.
 
 - 2026-11-22 (Phase 8): Providers for own keys: Google, OpenAI, Anthropic (`@ai-sdk/openai`, `@ai-sdk/anthropic` added with the owner's OK). Owners pick from a short tested model list (`lib/ai/model-catalog.ts`); anything else is refused, and a stored non-catalog model means "not configured". Embeddings, fact extraction and inbox suggestions always use the platform key (owner tools, not metered).
