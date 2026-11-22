@@ -190,6 +190,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-22 (Phase 6): Phase 6 done. Live inbox verified by the owner (questions listed with counts, public + private answers approved). Visitor/owner emails are refused by Resend's test sender (it only delivers to the Resend account's own address); they will work once a sending domain is verified and `EMAIL_FROM` updated. No resend button for leads that failed meanwhile (owner's choice).
+
 - 2026-11-22 (Phase 6): Inbox = `/dashboard/sites/[id]/questions` (tabs with Knowledge Base). Lists top-level questions only; merged questions become hidden children (`merged_into_id`) whose counts and waiting visitors move to the target, and answering the target answers them all. Delete removes the question, its children and their un-notified leads; the answer fact stays.
 - 2026-11-22 (Phase 6): Approving an answer creates an APPROVED fact (`source = inbox`, `source_question_id`) in one transaction with the status change, then embeds it and emails waiting visitors once each (`leads.notified_at`). "Only the people who asked" = private fact: emailed, never retrieved by chat.
 - 2026-11-22 (Phase 6): AI suggestion drafts from retrieved approved public facts only (score >= 0.45); a draft that cites no retrieved fact is dropped. It is shown only to the owner, who edits and approves it.
