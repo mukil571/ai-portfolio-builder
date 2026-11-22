@@ -28,6 +28,7 @@
     "@neon/config": "^1.14.1",
     "@neon/env": "^2.1.4",
     "@neondatabase/serverless": "^1.2.1",
+    "@sentry/nextjs": "^11.16.0",
     "@vercel/blob": "^2.9.0",
     "ai": "^7.0.173",
     "better-auth": "^1.7.25",
