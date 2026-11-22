@@ -108,7 +108,7 @@ export function AiSettingsPanel({
         </p>
       ) : null}
 
-      <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+      <section className="rounded-2xl p-5 glass">
         <h2 className="flex items-center gap-2 font-semibold tracking-tight">
           <Bot className="size-5 text-[var(--brand-from)]" aria-hidden="true" />
           How your assistant is powered
@@ -183,7 +183,7 @@ export function AiSettingsPanel({
         {initial.mode === "platform" ? <div className="mt-5">{planSummary}</div> : null}
       </section>
 
-      <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+      <section className="rounded-2xl p-5 glass">
         <h2 className="flex items-center gap-2 font-semibold tracking-tight">
           <KeyRound className="size-5 text-[var(--brand-from)]" aria-hidden="true" />
           Your own AI key

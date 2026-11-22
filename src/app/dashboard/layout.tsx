@@ -14,8 +14,12 @@ export const metadata: Metadata = { title: "Dashboard · Loriyum", robots: { ind
  */
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-full flex-1 flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col border-b border-white/5 bg-card/40 md:sticky md:top-0 md:h-dvh md:w-64 md:border-r md:border-b-0">
+    <div className="relative isolate flex min-h-full flex-1 flex-col md:flex-row">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-[-14rem] right-[-8rem] size-[34rem] rounded-full bg-[var(--brand-from)]/12 blur-[140px]" />
+        <div className="absolute bottom-[-12rem] left-1/3 size-[28rem] rounded-full bg-[var(--brand-to)]/8 blur-[140px]" />
+      </div>
+      <aside className="flex shrink-0 flex-col border-b border-white/5 bg-card/30 backdrop-blur-xl md:sticky md:top-0 md:h-dvh md:w-64 md:border-r md:border-b-0">
         <div className="flex h-16 items-center justify-between gap-2 px-4 md:px-5">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold tracking-tight">
             <Logo />
@@ -23,10 +27,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <DashboardNav />
-        <div className="hidden border-t border-white/5 p-4 md:block">
-          <Suspense fallback={<UserMenuSkeleton />}>
-            <UserMenu />
-          </Suspense>
+        <div className="hidden p-3 md:block">
+          <div className="rounded-2xl p-3 glass">
+            <Suspense fallback={<UserMenuSkeleton />}>
+              <UserMenu />
+            </Suspense>
+          </div>
         </div>
       </aside>
 
@@ -36,7 +42,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <UserMenu />
           </Suspense>
         </div>
-        <main className="flex-1 px-4 py-8 sm:px-8 sm:py-10">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-8 sm:py-10">
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -6,12 +6,23 @@ export function ChatPreview() {
     <div className="relative w-full max-w-md">
       <div
         aria-hidden="true"
-        className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-[var(--brand-from)]/30 to-[var(--brand-to)]/20 blur-3xl"
+        className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-[var(--brand-from)]/40 via-[var(--brand-via)]/20 to-[var(--brand-to)]/30 blur-3xl"
       />
       <figure
         aria-label="Example chat between a visitor and an owner's site assistant"
-        className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/80 shadow-2xl shadow-black/40 backdrop-blur"
+        className="glow-border relative overflow-hidden rounded-3xl shadow-2xl glass shadow-black/50"
       >
+        <div
+          aria-hidden="true"
+          className="flex items-center gap-1.5 border-b border-white/5 bg-white/[0.02] px-4 py-2.5"
+        >
+          <span className="size-2.5 rounded-full bg-red-400/70" />
+          <span className="size-2.5 rounded-full bg-amber-400/70" />
+          <span className="size-2.5 rounded-full bg-emerald-400/70" />
+          <span className="ml-3 truncate rounded-md bg-white/5 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+            loriyum.app/site/alex
+          </span>
+        </div>
         <div className="flex items-center gap-3 border-b border-white/5 px-5 py-4">
           <span className="relative flex size-2.5">
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/60 motion-reduce:animate-none" />
@@ -45,13 +56,31 @@ export function ChatPreview() {
           </Bot>
         </div>
       </figure>
+      <div
+        aria-hidden="true"
+        className="absolute -top-5 -right-3 hidden aurora-blob items-center gap-2 rounded-2xl px-3 py-2 text-xs font-medium glass sm:flex"
+      >
+        <span className="flex size-6 items-center justify-center rounded-lg bg-emerald-400/15 text-emerald-300">
+          <BadgeCheck className="size-3.5" />
+        </span>
+        100% owner-approved
+      </div>
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-5 -left-4 hidden aurora-blob items-center gap-2 rounded-2xl px-3 py-2 text-xs font-medium glass [animation-delay:-6s] sm:flex"
+      >
+        <span className="flex size-6 items-center justify-center rounded-lg bg-brand text-white">
+          <Inbox className="size-3.5" />
+        </span>
+        New question → your inbox
+      </div>
     </div>
   );
 }
 
 function Visitor({ children }: { children: React.ReactNode }) {
   return (
-    <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-primary-foreground">
+    <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-primary-foreground">
       {children}
     </p>
   );

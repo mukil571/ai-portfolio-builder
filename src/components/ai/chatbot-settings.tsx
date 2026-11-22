@@ -40,7 +40,7 @@ export function ChatbotSettings({
   };
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+    <section className="rounded-2xl p-5 glass">
       <h2 className="flex items-center gap-2 font-semibold tracking-tight">
         <MessageCircle className="size-5 text-[var(--brand-from)]" aria-hidden="true" />
         Chatbot

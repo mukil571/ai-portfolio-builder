@@ -77,10 +77,7 @@ export function SectionCard({
 
   const panelId = `section-${type}-panel`;
   return (
-    <section
-      aria-labelledby={`section-${type}-title`}
-      className="rounded-2xl border border-white/10 bg-card/50"
-    >
+    <section aria-labelledby={`section-${type}-title`} className="rounded-2xl glass">
       <div className="flex items-center gap-2 p-4">
         <button
           type="button"

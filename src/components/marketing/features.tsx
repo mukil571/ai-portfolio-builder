@@ -35,12 +35,24 @@ export function Features() {
             Built so you can trust what your site says.
           </h2>
         </FadeIn>
-        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2">
-          {features.map((f) => (
-            <div key={f.title} className="bg-background p-8">
-              <f.icon className="size-6 text-[var(--brand-from)]" aria-hidden="true" />
-              <h3 className="mt-4 text-lg font-medium">{f.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted-foreground">{f.body}</p>
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f, i) => (
+            <div key={f.title} className={i === 0 || i === 3 ? "lg:col-span-2" : undefined}>
+              <FadeIn delay={i * 0.06}>
+                <div className="relative h-full lift overflow-hidden rounded-3xl p-8 glass">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-[var(--brand-from)]/15 blur-3xl"
+                  />
+                  <span className="relative flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--brand-from)]/30 via-[var(--brand-via)]/20 to-[var(--brand-to)]/20 ring-1 ring-white/10">
+                    <f.icon className="size-6 text-white" aria-hidden="true" />
+                  </span>
+                  <h3 className="relative mt-6 text-xl font-semibold tracking-tight">{f.title}</h3>
+                  <p className="relative mt-2 max-w-md leading-relaxed text-muted-foreground">
+                    {f.body}
+                  </p>
+                </div>
+              </FadeIn>
             </div>
           ))}
         </div>

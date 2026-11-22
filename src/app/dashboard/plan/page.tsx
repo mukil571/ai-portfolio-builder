@@ -30,7 +30,7 @@ async function Plan() {
   const status = await getPlanStatus(getDb(), user.id);
   return (
     <div className="mt-6 space-y-6">
-      <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+      <section className="rounded-2xl p-5 glass">
         <h2 className="mb-4 font-semibold tracking-tight">This month</h2>
         <UsageMeter
           used={status.used}

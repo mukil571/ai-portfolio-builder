@@ -24,13 +24,13 @@ async function Account() {
   const user = await requireUser("/dashboard/account");
   return (
     <div className="mt-6 space-y-6">
-      <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+      <section className="rounded-2xl p-5 glass">
         <p className="text-sm">
           Signed in as <span className="font-medium">{user.name}</span>{" "}
           <span className="break-all text-muted-foreground">({user.email})</span>
         </p>
       </section>
-      <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+      <section className="rounded-2xl p-5 glass">
         <h2 className="font-semibold tracking-tight">Download my data</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           One file with your sites, content, facts, questions, conversations and visitor emails.

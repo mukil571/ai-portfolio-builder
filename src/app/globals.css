@@ -114,12 +114,16 @@
   --input: oklch(1 0 0 / 14%);
   --ring: oklch(0.68 0.19 280);
   --brand-from: oklch(0.72 0.18 285);
+  --brand-via: oklch(0.74 0.17 340);
   --brand-to: oklch(0.8 0.13 200);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* Button gradient: darker stops so white text stays ≥ 4.5:1. */
+  --brand-btn-from: oklch(0.52 0.21 285);
+  --brand-btn-to: oklch(0.52 0.2 320);
+  --chart-1: oklch(0.72 0.18 285);
+  --chart-2: oklch(0.8 0.13 200);
+  --chart-3: oklch(0.74 0.17 340);
+  --chart-4: oklch(0.8 0.15 160);
+  --chart-5: oklch(0.82 0.14 80);
   --sidebar: oklch(0.18 0.014 275);
   --sidebar-foreground: oklch(0.97 0.005 275);
   --sidebar-primary: oklch(0.68 0.19 280);
@@ -146,6 +150,124 @@
     html {
       scroll-behavior: auto;
     }
+  }
+}
+
+/* ---------- Loriyum app chrome (landing, auth, dashboard) ---------- */
+
+@utility glass {
+  background:
+    linear-gradient(180deg, oklch(1 0 0 / 5%), oklch(1 0 0 / 2%)),
+    color-mix(in oklch, var(--card) 70%, transparent);
+  border: 1px solid oklch(1 0 0 / 9%);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 6%),
+    0 20px 40px -24px oklch(0 0 0 / 60%);
+  backdrop-filter: blur(16px);
+}
+
+/* Gradient hairline border (brand ramp) drawn with a mask, so the fill stays as-is. */
+@utility glow-border {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--brand-from), var(--brand-via), var(--brand-to));
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--brand-from), var(--brand-via) 50%, var(--brand-to));
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-animated {
+  background: linear-gradient(
+    100deg,
+    var(--brand-from),
+    var(--brand-via) 30%,
+    var(--brand-to) 60%,
+    var(--brand-from)
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: lori-shine 8s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility bg-brand {
+  background-image: linear-gradient(120deg, var(--brand-btn-from), var(--brand-btn-to));
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 4%) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility shadow-glow {
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 6%),
+    0 18px 60px -20px var(--brand-from);
+}
+
+@utility lift {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 10%),
+      0 24px 60px -28px var(--brand-from);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+@utility aurora-blob {
+  animation: lori-float 18s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes lori-shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes lori-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-3%, 3%, 0) scale(0.95);
   }
 }
 

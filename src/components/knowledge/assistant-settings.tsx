@@ -33,10 +33,7 @@ export function AssistantSettings({
   }
 
   return (
-    <section
-      aria-labelledby="assistant-heading"
-      className="rounded-2xl border border-white/10 bg-card/50 p-5"
-    >
+    <section aria-labelledby="assistant-heading" className="rounded-2xl p-5 glass">
       <div className="flex items-start gap-3">
         <Bot className="mt-0.5 size-5 shrink-0 text-[var(--brand-from)]" aria-hidden="true" />
         <div className="min-w-0 flex-1">

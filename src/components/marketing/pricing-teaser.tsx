@@ -43,7 +43,7 @@ const plans = [
 
 export function PricingTeaser() {
   return (
-    <section id="pricing" className="scroll-mt-20 border-t border-white/5 py-24 sm:py-32">
+    <section id="pricing" className="scroll-mt-20 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <FadeIn>
           <p className="text-sm font-medium text-[var(--brand-to)]">Pricing</p>
@@ -60,18 +60,22 @@ export function PricingTeaser() {
               key={plan.name}
               className={
                 plan.featured
-                  ? "relative rounded-2xl border border-[var(--brand-from)]/50 bg-card/70 p-6 shadow-[0_0_60px_-20px_var(--brand-from)]"
-                  : "rounded-2xl border border-white/10 bg-card/40 p-6"
+                  ? "glow-border relative rounded-3xl p-7 glass shadow-glow md:-translate-y-3"
+                  : "lift rounded-3xl p-7 glass"
               }
             >
               {plan.featured ? (
-                <span className="absolute -top-3 left-6 rounded-full bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">
+                <span className="absolute -top-3 left-7 rounded-full bg-brand px-3 py-0.5 text-xs font-medium text-primary-foreground shadow-[0_6px_20px_-6px_var(--brand-via)]">
                   Most popular
                 </span>
               ) : null}
               <h3 className="font-medium">{plan.name}</h3>
               <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
+                <span
+                  className={`text-5xl font-semibold tracking-tight ${plan.featured ? "text-gradient" : ""}`}
+                >
+                  {plan.price}
+                </span>
                 <span className="text-sm text-muted-foreground">/month</span>
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{plan.blurb}</p>

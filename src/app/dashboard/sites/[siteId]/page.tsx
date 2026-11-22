@@ -83,7 +83,7 @@ async function Overview({ params }: Props) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+        <section className="rounded-2xl p-5 glass">
           <h2 className="font-semibold tracking-tight">Visits per day</h2>
           {o.visits30 === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">

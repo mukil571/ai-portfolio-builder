@@ -56,7 +56,7 @@ export function SiteTabs({
   return (
     <nav
       aria-label="Site workspace"
-      className="mb-6 flex gap-1 overflow-x-auto border-b border-white/10"
+      className="mb-8 flex gap-1 overflow-x-auto rounded-2xl p-1.5 glass"
     >
       {tabs.map(({ key, label, href, Icon }) => (
         <Link
@@ -64,16 +64,16 @@ export function SiteTabs({
           href={href}
           aria-current={current === key ? "page" : undefined}
           className={cn(
-            "-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+            "inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
             current === key
-              ? "border-[var(--brand-from)] text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground",
+              ? "bg-brand text-white shadow-[0_6px_20px_-8px_var(--brand-from)]"
+              : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
           )}
         >
           <Icon className="size-4" aria-hidden="true" />
           {label}
           {key === "questions" && openQuestions ? (
-            <span className="rounded-full bg-[var(--brand-from)]/15 px-1.5 text-xs text-[var(--brand-from)]">
+            <span className="rounded-full bg-white/15 px-1.5 text-xs text-current">
               {openQuestions}
               <span className="sr-only"> open</span>
             </span>
@@ -95,9 +95,17 @@ export function StatCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-card/50 p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+    <div className="relative lift overflow-hidden rounded-2xl p-5 glass">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-10 -right-10 size-28 rounded-full bg-[var(--brand-from)]/15 blur-2xl"
+      />
+      <p className="relative text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="relative mt-2 w-fit text-gradient text-3xl font-semibold tracking-tight">
+        {value}
+      </p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );
@@ -119,7 +127,7 @@ export function WorkspaceHeader({
 }) {
   return (
     <>
-      <h1 className="mt-4 mb-6 text-2xl font-semibold tracking-tight">
+      <h1 className="mt-4 mb-6 text-3xl font-semibold tracking-tight">
         {title}
         <span className="mt-1 block text-base font-normal text-muted-foreground sm:mt-0 sm:ml-2 sm:inline">
           {siteName}

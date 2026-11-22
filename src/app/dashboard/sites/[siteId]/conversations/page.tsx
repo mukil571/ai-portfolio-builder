@@ -80,7 +80,7 @@ async function Conversations({ params, searchParams }: Props) {
             </p>
           ) : (
             <div className="grid gap-4 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-              <ul className="max-h-[32rem] space-y-1 overflow-y-auto rounded-2xl border border-white/10 bg-card/50 p-2">
+              <ul className="max-h-[32rem] space-y-1 overflow-y-auto rounded-2xl p-2 glass">
                 {convs.map((c) => (
                   <li key={c.id}>
                     <Link
@@ -101,7 +101,7 @@ async function Conversations({ params, searchParams }: Props) {
                   </li>
                 ))}
               </ul>
-              <div className="min-w-0 rounded-2xl border border-white/10 bg-card/50 p-4">
+              <div className="min-w-0 rounded-2xl p-4 glass">
                 {transcript ? (
                   <>
                     <p className="mb-3 text-xs text-muted-foreground">

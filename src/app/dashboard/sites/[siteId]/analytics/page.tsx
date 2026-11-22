@@ -86,7 +86,7 @@ async function Analytics({ params }: Props) {
             />
           </div>
 
-          <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+          <section className="rounded-2xl p-5 glass">
             <h2 className="font-semibold tracking-tight">Answered vs passed to you</h2>
             <div
               className="mt-4 flex h-3 overflow-hidden rounded-full bg-white/5"
@@ -113,7 +113,7 @@ async function Analytics({ params }: Props) {
           </section>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+            <section className="rounded-2xl p-5 glass">
               <h2 className="font-semibold tracking-tight">Coverage gaps</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Most-asked questions your assistant couldn&apos;t answer.
@@ -145,7 +145,7 @@ async function Analytics({ params }: Props) {
               </Link>
             </section>
 
-            <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+            <section className="rounded-2xl p-5 glass">
               <h2 className="font-semibold tracking-tight">Most used facts</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 What your assistant answers most often.

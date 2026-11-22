@@ -215,7 +215,7 @@ export function KnowledgeManager({
             No approved facts yet. Add one below, or import from text.
           </p>
         ) : (
-          <ul className="divide-y divide-white/5 rounded-2xl border border-white/10 bg-card/50">
+          <ul className="divide-y divide-white/5 rounded-2xl glass">
             {approved.map((f) => (
               <li key={f.id} className="p-4">
                 {editing === f.id ? (
@@ -286,10 +286,7 @@ export function KnowledgeManager({
         )}
       </section>
 
-      <section
-        aria-labelledby="add-heading"
-        className="rounded-2xl border border-white/10 bg-card/50 p-5"
-      >
+      <section aria-labelledby="add-heading" className="rounded-2xl p-5 glass">
         <h2 id="add-heading" className="mb-4 text-lg font-semibold tracking-tight">
           Add a fact
         </h2>
@@ -340,10 +337,7 @@ function ImportPanel({
   const fileRef = useRef<HTMLInputElement>(null);
 
   return (
-    <section
-      aria-labelledby="import-heading"
-      className="rounded-2xl border border-white/10 bg-card/50 p-5"
-    >
+    <section aria-labelledby="import-heading" className="rounded-2xl p-5 glass">
       <h2 id="import-heading" className="text-lg font-semibold tracking-tight">
         Import facts
       </h2>

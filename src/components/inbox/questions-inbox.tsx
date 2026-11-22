@@ -181,7 +181,7 @@ export function QuestionsInbox({
       ) : (
         <ul className="space-y-3" aria-label={`${status} questions`}>
           {questions.map((q) => (
-            <li key={q.id} className="rounded-2xl border border-white/10 bg-card/60 p-4">
+            <li key={q.id} className="rounded-2xl p-4 glass">
               <div className="flex items-start justify-between gap-3">
                 <p className="min-w-0 font-medium break-words">{q.question}</p>
                 <span

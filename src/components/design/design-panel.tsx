@@ -50,7 +50,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+    <section className="rounded-2xl p-5 glass">
       <h2 className="font-semibold tracking-tight">{title}</h2>
       {hint ? <p className="mt-1 text-sm text-muted-foreground">{hint}</p> : null}
       <div className="mt-4">{children}</div>
@@ -300,7 +300,7 @@ export function DesignPanel({
         <Card title="Section order">
           <SectionOrder siteId={siteId} initial={sections} onSaved={refreshPreview} />
         </Card>
-        <section className="hidden rounded-2xl border border-white/10 bg-card/50 p-3 lg:block">
+        <section className="hidden rounded-2xl p-3 glass lg:block">
           <div className="mb-2 flex items-center justify-between px-1">
             <h2 className="text-sm font-medium">Preview (saved design)</h2>
             <a

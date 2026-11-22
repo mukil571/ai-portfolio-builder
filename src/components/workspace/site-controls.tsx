@@ -40,7 +40,7 @@ export function PublishControls({
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card/50 p-5">
+    <section className="rounded-2xl p-5 glass">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="flex items-center gap-2 font-medium">

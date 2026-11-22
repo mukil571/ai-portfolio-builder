@@ -22,7 +22,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="scroll-mt-20 border-t border-white/5 py-24 sm:py-32">
+    <section id="how" className="scroll-mt-20 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <FadeIn>
           <p className="text-sm font-medium text-[var(--brand-to)]">How it works</p>
@@ -30,24 +30,32 @@ export function HowItWorks() {
             An assistant that learns from you, not from guesses.
           </h2>
         </FadeIn>
-        <ol className="mt-14 grid gap-6 md:grid-cols-3">
-          {steps.map((step, i) => (
-            <li key={step.title}>
-              <FadeIn delay={i * 0.08}>
-                <div className="h-full rounded-2xl border border-white/10 bg-card/50 p-6 transition-colors hover:border-white/20">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--brand-from)]/25 to-[var(--brand-to)]/15 text-foreground ring-1 ring-white/10">
-                      <step.icon className="size-5" aria-hidden="true" />
-                    </span>
-                    <span className="font-mono text-xs text-muted-foreground">0{i + 1}</span>
+        <div className="relative mt-14">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-12 right-[16%] left-[16%] hidden h-px bg-gradient-to-r from-transparent via-[var(--brand-via)]/60 to-transparent md:block"
+          />
+          <ol className="relative grid gap-6 md:grid-cols-3">
+            {steps.map((step, i) => (
+              <li key={step.title}>
+                <FadeIn delay={i * 0.08}>
+                  <div className="relative h-full lift rounded-3xl p-7 glass">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-11 items-center justify-center rounded-2xl bg-brand text-white shadow-[0_8px_24px_-8px_var(--brand-from)]">
+                        <step.icon className="size-5" aria-hidden="true" />
+                      </span>
+                      <span className="text-gradient font-mono text-sm font-semibold">
+                        0{i + 1}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium">{step.title}</h3>
+                    <p className="mt-2 leading-relaxed text-muted-foreground">{step.body}</p>
                   </div>
-                  <h3 className="mt-5 text-lg font-medium">{step.title}</h3>
-                  <p className="mt-2 leading-relaxed text-muted-foreground">{step.body}</p>
-                </div>
-              </FadeIn>
-            </li>
-          ))}
-        </ol>
+                </FadeIn>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

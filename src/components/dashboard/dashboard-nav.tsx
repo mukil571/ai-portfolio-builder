@@ -52,9 +52,9 @@ function NavLinks({ active }: { active: string | null }) {
           href={href}
           aria-current={active === href ? "page" : undefined}
           className={cn(
-            "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+            "relative flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
             active === href
-              ? "bg-white/5 text-foreground"
+              ? "bg-gradient-to-r from-[var(--brand-from)]/20 to-transparent text-foreground ring-1 ring-white/10 before:absolute before:top-2 before:bottom-2 before:left-0 before:w-0.5 before:rounded-full before:bg-[var(--brand-from)]"
               : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground",
           )}
         >

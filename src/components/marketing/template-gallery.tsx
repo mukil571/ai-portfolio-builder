@@ -10,7 +10,8 @@ export function TemplateGallery() {
     <section id="templates" className="scroll-mt-20 px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
-          <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+          <p className="text-sm font-medium text-[var(--brand-to)]">Templates</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
             See it live
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -25,9 +26,13 @@ export function TemplateGallery() {
                 href={`/templates/${t.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block rounded-2xl border border-white/10 bg-card/50 p-2 transition-colors hover:border-white/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="group block lift rounded-2xl p-2 glass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
-                <TemplateSwatch meta={t} />
+                <span className="block overflow-hidden rounded-xl">
+                  <span className="block transition-transform duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100">
+                    <TemplateSwatch meta={t} />
+                  </span>
+                </span>
                 <span className="mt-2 flex items-center justify-between gap-2 px-1 text-sm font-medium">
                   {t.name}
                   <ArrowUpRight

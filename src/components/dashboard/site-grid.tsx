@@ -15,8 +15,8 @@ import type { OwnerSiteSummary } from "@/lib/db/queries/sites";
 
 export function EmptySites() {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-white/15 bg-card/30 px-6 py-20 text-center">
-      <span className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--brand-from)]/25 to-[var(--brand-to)]/15 ring-1 ring-white/10">
+    <div className="flex flex-col items-center rounded-2xl border border-dashed border-white/15 bg-card/30 px-6 py-24 text-center backdrop-blur">
+      <span className="flex size-16 items-center justify-center rounded-3xl bg-brand text-white shadow-glow">
         <Globe className="size-6" aria-hidden="true" />
       </span>
       <h2 className="mt-6 text-xl font-semibold tracking-tight">No websites yet</h2>
@@ -45,7 +45,7 @@ export function SiteGrid({ sites }: { sites: OwnerSiteSummary[] }) {
       <li>
         <Link
           href="/dashboard/new"
-          className="flex h-full min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 text-sm font-medium text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
+          className="flex h-full min-h-44 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 text-sm font-medium text-muted-foreground transition-colors hover:border-[var(--brand-from)]/60 hover:bg-[var(--brand-from)]/5 hover:text-foreground"
         >
           <Plus className="size-5" aria-hidden="true" />
           Add website
@@ -58,7 +58,11 @@ export function SiteGrid({ sites }: { sites: OwnerSiteSummary[] }) {
 function SiteCard({ site }: { site: OwnerSiteSummary }) {
   const published = site.status === "published";
   return (
-    <article className="flex h-full min-h-44 flex-col rounded-2xl border border-white/10 bg-card/60 p-5">
+    <article className="relative flex h-full min-h-44 lift flex-col overflow-hidden rounded-2xl p-5 pt-6 glass">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-x-0 top-0 h-1 ${published ? "bg-gradient-to-r from-[var(--brand-from)] via-[var(--brand-via)] to-[var(--brand-to)]" : "bg-white/10"}`}
+      />
       <div className="flex items-start justify-between gap-3">
         <h2 className="min-w-0 truncate font-medium">
           <Link href={`/dashboard/sites/${site.id}`} className="hover:underline">
@@ -69,7 +73,7 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
         <span
           className={
             published
-              ? "shrink-0 rounded-full bg-emerald-400/10 px-2 py-0.5 text-xs font-medium text-emerald-300"
+              ? "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-400/10 px-2 py-0.5 text-xs font-medium text-emerald-300 before:size-1.5 before:rounded-full before:bg-emerald-400"
               : "shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-muted-foreground"
           }
         >
