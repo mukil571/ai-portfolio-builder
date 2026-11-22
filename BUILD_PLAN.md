@@ -169,13 +169,13 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 10 — Hardening and launch
 **Goal:** resume-ready, demo-ready.
 
-- [ ] Rate limiting everywhere sensitive; abuse/spam protection on chat
-- [ ] Prompt-injection regression tests; security review against CLAUDE.md section 6
-- [ ] Playwright e2e: signup → create → publish → chat → answer loop
-- [ ] Accessibility pass, performance pass, error monitoring (Sentry)
-- [ ] Landing page final polish with live demo chatbot
-- [ ] Seed script: a demo portfolio site and a demo business site
-- [ ] README with architecture diagram, screenshots, setup steps
+- [x] Rate limiting everywhere sensitive; abuse/spam protection on chat
+- [x] Prompt-injection regression tests; security review against CLAUDE.md section 6
+- [x] Playwright e2e: signup → create → publish → chat → answer loop
+- [x] Accessibility pass, performance pass, error monitoring (Sentry)
+- [x] Landing page final polish with live demo chatbot
+- [x] Seed script: a demo portfolio site and a demo business site
+- [x] README with architecture diagram, screenshots, setup steps
 - [ ] 2-minute demo video; production deploy on Vercel with custom domain (optional)
 
 **Done when:** a stranger can sign up on production and run the full loop without help.
@@ -189,6 +189,13 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 10): Rate limits: shared Postgres fixed-window counters (migration `0005`, `rate_limits`) on notify (5/10 min/IP), visit (120/min/IP), uploads (30/10 min/owner), AI owner tools (30/h/owner), key tests (10/10 min), data export (5/h); fail open on DB errors. Chat spam: honeypot field, < 600 ms open-to-send, same message within 2 min, 80-message conversation cap -> fixed replies, no AI call.
+- 2026-11-22 (Phase 10): Injection regression = a deliberately gullible fake model in `hardening.test.ts`; the gate must still block injected numbers and invented fact ids. Security review written to `docs/security-review.md` (incl. known gaps).
+- 2026-11-22 (Phase 10): Sentry (`@sentry/nextjs`, owner's OK) via `instrumentation.ts` / `instrumentation-client.ts`, loaded lazily only when `NEXT_PUBLIC_SENTRY_DSN` is set (eager loading added 150 KB to every page). No PII, no request data, no tracing/replay; API-key-shaped strings masked.
+- 2026-11-22 (Phase 10): Deviation (owner's choice): no live demo chatbot on the landing page (AI cost); it links to all 8 template samples instead. Seed adds a business demo at `/site/demo-business` (Studio template; slug reserved). Landing pricing now reads the real plan numbers.
+- 2026-11-22 (Phase 10): Accessibility: primary purple darkened to oklch(0.56 0.19 280) (white text 3.1:1 -> 5.0:1). Lighthouse mobile, local production build: accessibility 100 on landing, login, signup and templates; performance ~84-87 on this laptop (same page weight as Phase 7's 92-97 runs; host CPU load varies), to be confirmed on production with PageSpeed Insights.
+- 2026-11-22 (Phase 10): README with mermaid architecture diagram, screenshots (`docs/screenshots/`, taken from a local test account) and setup steps. Demo video and custom domain are left to the owner.
 
 - 2026-11-22 (Phase 9): Phase 9 done. Overview/visits, conversations, analytics, chatbot settings, unpublish/publish again and data export verified by the owner on production.
 
