@@ -7,6 +7,8 @@ export default defineConfig({
     tsconfigPaths: true,
     alias: {
       // The real font loader only runs inside Next's compiler.
+      // Unit tests run in Node, where server-only modules are allowed.
+      "server-only": fileURLToPath(new URL("./src/tests/helpers/empty-module.ts", import.meta.url)),
       "next/font/google": fileURLToPath(
         new URL("./src/tests/helpers/next-font-google.ts", import.meta.url),
       ),
