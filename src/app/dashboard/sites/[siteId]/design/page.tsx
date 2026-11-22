@@ -43,12 +43,12 @@ async function Design({ params }: Props) {
   const user = await requireUser(`/dashboard/sites/${siteId}/design`);
   if (!isUuid(siteId)) notFound();
   const db = getDb();
-  const [site, design] = await Promise.all([
+  const [site, design, counts] = await Promise.all([
     getEditableSite(db, user.id, siteId),
     getSiteDesign(db, user.id, siteId),
+    countQuestionsByStatus(db, siteId),
   ]);
   if (!site || !design) notFound();
-  const counts = await countQuestionsByStatus(db, siteId);
 
   const view = toSiteView({ ...site, theme: design.theme, seo: design.seo }, site.sections);
   // Defaults shown as placeholders: what search engines get if the owner leaves SEO empty.

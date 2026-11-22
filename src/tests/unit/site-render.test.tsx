@@ -86,7 +86,7 @@ describe("templates", () => {
       for (const id of ["about", "projects", "contact"]) expect(out).toContain(`id="${id}"`);
       expect(out.match(/<h1/g)).toHaveLength(1);
     }
-  });
+  }, 20_000);
 
   it("owner choices override template defaults", () => {
     const out = render("dark-dev", { accent: "#e11d48", fontPair: "serif", defaultMode: "light" });

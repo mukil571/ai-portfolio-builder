@@ -38,9 +38,12 @@ async function Knowledge({ params }: Props) {
   const { siteId } = await params;
   const user = await requireUser(`/dashboard/sites/${siteId}/knowledge`);
   if (!isUuid(siteId)) notFound();
-  const site = await getEditableSite(getDb(), user.id, siteId);
+  // Both queries are owner-safe: counts are only shown if the site turns out to be theirs.
+  const [site, counts] = await Promise.all([
+    getEditableSite(getDb(), user.id, siteId),
+    countQuestionsByStatus(getDb(), siteId),
+  ]);
   if (!site) notFound();
-  const counts = await countQuestionsByStatus(getDb(), site.id);
   return (
     <>
       <h1 className="mt-4 mb-6 text-2xl font-semibold tracking-tight">

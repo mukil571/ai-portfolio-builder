@@ -56,6 +56,12 @@ function createAuth() {
           },
         }
       : {},
+    session: {
+      // Remember a verified session in a signed, short-lived cookie so most page loads
+      // skip the database lookup. Trade-off: a revoked session (sign-out elsewhere,
+      // password reset) can keep working on another device for up to 5 minutes.
+      cookieCache: { enabled: true, maxAge: 5 * 60 },
+    },
     databaseHooks: {
       user: {
         create: {

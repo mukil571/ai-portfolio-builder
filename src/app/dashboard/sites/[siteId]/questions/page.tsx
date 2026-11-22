@@ -45,16 +45,17 @@ async function Inbox({ params, searchParams }: Props) {
   const user = await requireUser(`/dashboard/sites/${siteId}/questions`);
   if (!isUuid(siteId)) notFound();
   const db = getDb();
-  const site = await getEditableSite(db, user.id, siteId);
-  if (!site) notFound();
   const sp = await searchParams;
   const filter = inboxFilterSchema.parse({ status: sp.status, sort: sp.sort });
 
-  const [questions, counts, notify] = await Promise.all([
+  // All owner-scoped (counts are only shown once the site is confirmed as theirs).
+  const [site, questions, counts, notify] = await Promise.all([
+    getEditableSite(db, user.id, siteId),
     listQuestions(db, user.id, siteId, filter),
     countQuestionsByStatus(db, siteId),
     getQuestionNotify(db, user.id, siteId),
   ]);
+  if (!site) notFound();
   const views: QuestionView[] = (questions ?? []).map((q) => ({
     id: q.id,
     question: q.question,

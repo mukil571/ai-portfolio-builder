@@ -54,15 +54,13 @@ async function Ai({ params }: Props) {
   const user = await requireUser(`/dashboard/sites/${siteId}/ai`);
   if (!isUuid(siteId)) notFound();
   const db = getDb();
-  const [site, settings] = await Promise.all([
+  const [site, settings, counts, status] = await Promise.all([
     getEditableSite(db, user.id, siteId),
     getOwnerAiSettings(db, user.id, siteId),
-  ]);
-  if (!site || !settings) notFound();
-  const [counts, status] = await Promise.all([
     countQuestionsByStatus(db, siteId),
     getPlanStatus(db, user.id),
   ]);
+  if (!site || !settings) notFound();
   const env = getEnv();
 
   return (
