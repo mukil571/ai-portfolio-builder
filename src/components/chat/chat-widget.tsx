@@ -64,6 +64,12 @@ export function ChatWidget({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  // Spam signals (see /api/chat): when the panel opened, and a honeypot people never see.
+  const openedAt = useRef(0);
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (open) openedAt.current = Date.now();
+  }, [open]);
 
   // Restore this browser session's conversation.
   useEffect(() => {
@@ -101,7 +107,13 @@ export function ChatWidget({
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, message: text, conversationId: conversationId.current }),
+        body: JSON.stringify({
+          slug,
+          message: text,
+          conversationId: conversationId.current,
+          website: honeypotRef.current?.value || undefined,
+          openedForMs: openedAt.current ? Date.now() - openedAt.current : undefined,
+        }),
       });
       if (!res.body || (!res.ok && !res.headers.get("content-type")?.includes("ndjson"))) {
         patch({ kind: "error", text: "Sorry, something went wrong. Please try again." });
@@ -219,6 +231,16 @@ export function ChatWidget({
               void send();
             }}
           >
+            {/* Honeypot: hidden from people and assistive tech; bots tend to fill it. */}
+            <input
+              ref={honeypotRef}
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute -left-[9999px] size-px opacity-0"
+            />
             <label htmlFor={`${panelId}-input`} className="sr-only">
               Your question
             </label>

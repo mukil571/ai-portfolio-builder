@@ -3,3 +3,4 @@ export * from "./billing";
 export * from "./chat";
 export * from "./knowledge";
 export * from "./sites";
+export * from "./security";

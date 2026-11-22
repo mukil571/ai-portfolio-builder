@@ -15,6 +15,7 @@ import { getChatAiConfig, getChatTone } from "@/lib/db/queries/ai-settings";
 import {
   countRecentByIp,
   countRecentBySite,
+  conversationActivity,
   getChatSite,
   getOrCreateConversation,
   saveExchange,
@@ -82,6 +83,16 @@ export async function POST(request: Request): Promise<Response> {
   const message = cleanMessage(parsed.data.message);
   if (!message) return Response.json({ error: "Message is empty." }, { status: 400 });
 
+  // Spam: a filled honeypot or an instant send means a bot. Answer politely without any
+  // AI call or database write, so it learns nothing and costs nothing.
+  if (
+    parsed.data.website ||
+    (parsed.data.openedForMs !== undefined &&
+      parsed.data.openedForMs < chatConfig.MIN_OPEN_MS_BEFORE_SEND)
+  ) {
+    return templateReply("rate_limited", replyTemplates.rateLimited, 200);
+  }
+
   const db = getDb();
   const site = await getChatSite(db, parsed.data.slug);
   if (!site) return Response.json({ error: "Not found." }, { status: 404 });
@@ -99,6 +110,22 @@ export async function POST(request: Request): Promise<Response> {
     bySite >= chatConfig.RATE_LIMIT_PER_SITE_PER_HOUR
   ) {
     return templateReply("rate_limited", replyTemplates.rateLimited, 429);
+  }
+
+  // Spam: very long chats and immediate repeats get short templates (no AI call).
+  if (parsed.data.conversationId) {
+    const activity = await conversationActivity(db, parsed.data.conversationId);
+    if (activity.messageCount >= chatConfig.MAX_MESSAGES_PER_CONVERSATION) {
+      return templateReply("rate_limited", replyTemplates.chatTooLong, 200);
+    }
+    const last = activity.lastVisitor;
+    if (
+      last &&
+      last.content.toLowerCase() === message.toLowerCase() &&
+      now - last.createdAt.getTime() < chatConfig.DUPLICATE_WINDOW_MS
+    ) {
+      return templateReply("rate_limited", replyTemplates.duplicate, 200);
+    }
   }
 
   // Whose model answers: the owner's own key, or Loriyum's within the plan quota.

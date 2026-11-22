@@ -16,6 +16,7 @@ import { getEditableSite } from "@/lib/db/queries/site-builder";
 import { embed } from "@/lib/knowledge/embeddings";
 import { ExtractionUnavailableError, extractFacts } from "@/lib/knowledge/extract";
 import { indexFact } from "@/lib/knowledge/indexing";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 import { starterFactsFromSections } from "@/lib/knowledge/starter-facts";
 import {
   addFactSchema,
@@ -122,6 +123,10 @@ async function proposeFromText(
   source: "resume" | "file",
   fileId: string | null,
 ): Promise<KnowledgeResult> {
+  // Extraction calls Loriyum's AI: cap it per owner.
+  if (!(await hitRateLimit(getDb(), "aiTool", userId))) {
+    return { ok: false, error: RATE_LIMITED_MESSAGE };
+  }
   try {
     const facts = await extractFacts(text);
     const added = await createProposedFacts(getDb(), userId, siteId, facts, source, fileId);

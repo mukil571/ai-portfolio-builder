@@ -11,6 +11,11 @@ export const chatConfig = {
   /** Abuse protection. */
   RATE_LIMIT_PER_IP_PER_MINUTE: 20,
   RATE_LIMIT_PER_SITE_PER_HOUR: 300,
+  /** Spam: messages allowed per conversation (visitor + assistant), and a too-fast send. */
+  MAX_MESSAGES_PER_CONVERSATION: 80,
+  MIN_OPEN_MS_BEFORE_SEND: 600,
+  /** Spam: the same question again within this window gets a short template. */
+  DUPLICATE_WINDOW_MS: 2 * 60_000,
   /** Platform chat model (owners' own providers arrive in Phase 8). */
   PLATFORM_CHAT_MODEL: "gemini-3.5-flash-lite",
 } as const;

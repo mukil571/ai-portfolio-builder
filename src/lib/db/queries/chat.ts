@@ -272,3 +272,22 @@ export async function assistantEnabledFor(db: AppDb, siteIds: string[]): Promise
     );
   return new Set(rows.map((r) => r.siteId));
 }
+
+/** Spam signals for a conversation: total messages and the latest visitor message. */
+export async function conversationActivity(
+  db: AppDb,
+  conversationId: string,
+): Promise<{ messageCount: number; lastVisitor: { content: string; createdAt: Date } | null }> {
+  const [conv] = await db
+    .select({ messageCount: conversations.messageCount })
+    .from(conversations)
+    .where(eq(conversations.id, conversationId))
+    .limit(1);
+  const [last] = await db
+    .select({ content: messages.content, createdAt: messages.createdAt })
+    .from(messages)
+    .where(and(eq(messages.conversationId, conversationId), eq(messages.role, "visitor")))
+    .orderBy(sql`${messages.createdAt} desc`)
+    .limit(1);
+  return { messageCount: conv?.messageCount ?? 0, lastVisitor: last ?? null };
+}

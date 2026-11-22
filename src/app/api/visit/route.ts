@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 import { getDb } from "@/lib/db";
+import { getIpHash } from "@/lib/chat/visitor";
 import { recordVisit } from "@/lib/db/queries/workspace";
+import { hitRateLimit } from "@/lib/security/rate-limit";
 import { isValidSlug } from "@/lib/sites/slug";
 
 const schema = z.object({ slug: z.string().max(60) });
@@ -22,7 +24,9 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = schema.safeParse(body);
   if (!parsed.success || !isValidSlug(parsed.data.slug)) return done;
   try {
-    await recordVisit(getDb(), parsed.data.slug);
+    const db = getDb();
+    if (!(await hitRateLimit(db, "visit", await getIpHash()))) return done;
+    await recordVisit(db, parsed.data.slug);
   } catch (error) {
     console.error("[visit] count failed", (error as Error)?.name);
   }

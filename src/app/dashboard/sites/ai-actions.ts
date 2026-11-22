@@ -24,6 +24,7 @@ import {
 import { changePlan } from "@/lib/plans/usage";
 import { plans } from "@/lib/plans/plans";
 import { siteCacheTag } from "@/lib/sites/slug";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 import {
   aiModeSchema,
   byokModelSchema,
@@ -90,6 +91,9 @@ export async function saveApiKeyAction(input: unknown): Promise<AiResult> {
 
   const db = getDb();
   if (!(await getOwnerAiSettings(db, user.id, siteId))) return { ok: false, error: NOT_FOUND };
+  if (!(await hitRateLimit(db, "keyTest", user.id))) {
+    return { ok: false, error: RATE_LIMITED_MESSAGE };
+  }
 
   const test = await testApiKey(provider, model, apiKey);
   if (!test.ok) return { ok: false, error: keyTestMessage[test.reason] };
@@ -110,6 +114,9 @@ export async function testSavedKeyAction(input: unknown): Promise<AiResult> {
   if (!parsed.success) return { ok: false, error: GENERIC };
   const secret = encryptionSecret();
   if (!secret) return { ok: false, error: NO_ENCRYPTION };
+  if (!(await hitRateLimit(getDb(), "keyTest", user.id))) {
+    return { ok: false, error: RATE_LIMITED_MESSAGE };
+  }
   const record = await getOwnerKeyRecord(getDb(), user.id, parsed.data.siteId);
   if (!record) return { ok: false, error: "No key is saved for this site." };
   let apiKey: string;

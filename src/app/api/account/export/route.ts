@@ -3,12 +3,16 @@ import { connection } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import { exportAccountData } from "@/lib/db/queries/account";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 
 /** Everything stored for the signed-in account, as a JSON download (no secrets). */
 export async function GET(): Promise<Response> {
   await connection();
   const user = await getCurrentUser();
   if (!user) return Response.json({ error: "Sign in first." }, { status: 401 });
+  if (!(await hitRateLimit(getDb(), "export", user.id))) {
+    return Response.json({ error: RATE_LIMITED_MESSAGE }, { status: 429 });
+  }
   const data = await exportAccountData(getDb(), user.id);
   if (!data) return Response.json({ error: "Not found." }, { status: 404 });
   return new Response(JSON.stringify(data, null, 2), {

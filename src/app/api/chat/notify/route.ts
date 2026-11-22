@@ -1,5 +1,7 @@
 import { getDb } from "@/lib/db";
 import { createNotifyLead, getChatSite } from "@/lib/db/queries/chat";
+import { getIpHash } from "@/lib/chat/visitor";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 import { notifyRequestSchema } from "@/lib/validation/chat";
 
 /**
@@ -21,6 +23,9 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
   const db = getDb();
+  if (!(await hitRateLimit(db, "notify", await getIpHash()))) {
+    return Response.json({ error: RATE_LIMITED_MESSAGE }, { status: 429 });
+  }
   const site = await getChatSite(db, parsed.data.slug);
   if (!site) return Response.json({ error: "Not found." }, { status: 404 });
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getEnv } from "@/env";
 import { getCurrentUser } from "@/lib/auth/session";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 import { getDb } from "@/lib/db";
 import { ownsSite } from "@/lib/db/queries/site-builder";
 import { IMAGE_CONTENT_TYPES, MAX_IMAGE_BYTES, siteUploadPrefix } from "@/lib/uploads/policy";
@@ -53,6 +54,9 @@ export async function POST(request: Request): Promise<Response> {
         const { siteId } = payload.data;
         if (!pathname.startsWith(siteUploadPrefix(siteId)) || pathname.includes("..")) {
           throw new UploadDenied("Invalid upload request.");
+        }
+        if (!(await hitRateLimit(getDb(), "upload", user.id))) {
+          throw new UploadDenied(RATE_LIMITED_MESSAGE);
         }
         if (!(await ownsSite(getDb(), user.id, siteId))) {
           throw new UploadDenied("You can only upload to your own sites.");

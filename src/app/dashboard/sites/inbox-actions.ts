@@ -17,6 +17,7 @@ import { getEditableSite } from "@/lib/db/queries/site-builder";
 import { emailAnswerToVisitors } from "@/lib/inbox/notify";
 import { embed } from "@/lib/knowledge/embeddings";
 import { indexFact } from "@/lib/knowledge/indexing";
+import { hitRateLimit, RATE_LIMITED_MESSAGE } from "@/lib/security/rate-limit";
 import {
   answerQuestionSchema,
   mergeQuestionSchema,
@@ -71,6 +72,9 @@ export async function suggestAnswerAction(input: unknown): Promise<SuggestionRes
   const parsed = questionIdSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: GENERIC };
   const db = getDb();
+  if (!(await hitRateLimit(db, "aiTool", user.id))) {
+    return { ok: false, error: RATE_LIMITED_MESSAGE };
+  }
   const question = await getOwnedQuestion(db, user.id, parsed.data.questionId);
   if (!question) return { ok: false, error: NOT_FOUND };
   const site = await getEditableSite(db, user.id, question.siteId);
