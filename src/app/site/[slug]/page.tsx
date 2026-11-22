@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     openGraph: { type: "website", title, description, url, siteName: view.name },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

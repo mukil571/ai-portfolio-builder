@@ -121,3 +121,16 @@ export async function getSiteForOwner(
     .limit(1);
   return withSections(db, site);
 }
+
+/** Every published site's slug and last update, for the sitemap (public data only). */
+export async function listPublishedSlugs(
+  db: AppDb,
+  limit = 5000,
+): Promise<{ slug: string; updatedAt: Date }[]> {
+  return db
+    .select({ slug: sites.slug, updatedAt: sites.updatedAt })
+    .from(sites)
+    .where(eq(sites.status, "published"))
+    .orderBy(desc(sites.updatedAt))
+    .limit(limit);
+}
