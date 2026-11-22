@@ -190,6 +190,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-22 (Phase 7): Phase 7 done. Template samples, the Design tab and a live template switch verified by the owner on production.
+
 - 2026-11-22 (Phase 7): Lighthouse (mobile, production build) on all 8 template samples: performance 92-97, accessibility 100, best practices 100. SEO shows 63 there only because samples are deliberately `noindex`; a real published site scored SEO 100. Visual review done at 390px and 1280px.
 - 2026-11-22 (Phase 7): Templates = one shared shell + section components with semantic hook classes (`site-hero`, `site-section`, `site-card`, …); each template is CSS only (`src/app/site-templates.css`, keyed on `data-template`, `data-font`, `data-mode`). Switching templates only changes `sites.template`, so content can't be lost. Bento is a wrapping flex grid of tiles that pair up when neighbours exist.
 - 2026-11-22 (Phase 7): `sites.theme` = `{ accent?, fontPair?, defaultMode? }`; every unset field falls back to the template's default (so switching templates adopts the new look unless the owner chose otherwise). Text on the accent is black/white by luminance; accent used as text is `--site-accent-ink` (accent mixed toward the foreground) for contrast. Six curated font pairs via `next/font/google`, `preload: false` so a site only downloads the faces it uses. Hero image customization edits the hero section's image (no duplicate field).
