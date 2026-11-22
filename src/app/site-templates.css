@@ -800,3 +800,9 @@
   ul {
   justify-content: center;
 }
+
+/* Chat widget: owner chose accent colours (black/white text on it for contrast). */
+.site-root [data-chat-style="accent"] .chat-primary {
+  background: var(--site-accent);
+  color: var(--site-accent-fg);
+}

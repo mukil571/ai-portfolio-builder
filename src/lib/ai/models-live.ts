@@ -25,10 +25,10 @@ export class ChatUnavailableError extends Error {}
 export function chatDepsForModel(model: LanguageModel): ChatDeps {
   return {
     embed,
-    draft: async ({ owner, facts, message }) => {
+    draft: async ({ owner, facts, message, tone }) => {
       const { output } = await generateText({
         model,
-        system: draftSystemPrompt(owner),
+        system: draftSystemPrompt(owner, tone),
         prompt: draftUserPrompt(facts, message),
         output: Output.object({ schema: draftSchema }),
         temperature: 0,

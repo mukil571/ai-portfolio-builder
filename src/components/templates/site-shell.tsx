@@ -9,6 +9,7 @@ import type { SectionType } from "@/lib/validation/sections";
 import { siteFontVariables } from "./fonts";
 import { SITE_MODE_KEY } from "./mode-key";
 import { ModeToggle } from "./mode-toggle";
+import { VisitPing } from "./visit-ping";
 
 const NAV_TYPES: SectionType[] = [
   "about",
@@ -112,7 +113,16 @@ export function SiteShell({ site }: { site: SiteView }) {
           </p>
         </div>
       </footer>
-      {site.assistant ? <ChatWidget slug={site.slug} owner={site.assistant.owner} /> : null}
+      {site.assistant ? (
+        <ChatWidget
+          slug={site.slug}
+          owner={site.assistant.owner}
+          botName={site.assistant.botName}
+          greeting={site.assistant.greeting}
+          widgetStyle={site.assistant.widgetStyle}
+        />
+      ) : null}
+      {site.track ? <VisitPing slug={site.slug} /> : null}
     </div>
   );
 }

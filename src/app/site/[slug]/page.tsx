@@ -40,5 +40,5 @@ export default async function PublicSitePage({ params }: Props) {
   const { slug } = await params;
   const view = await getPublicSiteView(slug);
   if (!view) notFound();
-  return <SiteTemplate site={view} />;
+  return <SiteTemplate site={{ ...view, track: true }} />;
 }

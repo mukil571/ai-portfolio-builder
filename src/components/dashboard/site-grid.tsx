@@ -60,7 +60,12 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
   return (
     <article className="flex h-full min-h-44 flex-col rounded-2xl border border-white/10 bg-card/60 p-5">
       <div className="flex items-start justify-between gap-3">
-        <h2 className="min-w-0 truncate font-medium">{site.name}</h2>
+        <h2 className="min-w-0 truncate font-medium">
+          <Link href={`/dashboard/sites/${site.id}`} className="hover:underline">
+            {site.name}
+            <span className="sr-only"> overview</span>
+          </Link>
+        </h2>
         <span
           className={
             published

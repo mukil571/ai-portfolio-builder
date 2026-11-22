@@ -37,7 +37,23 @@ const MAX_CHARS = 1000;
 const newId = () => Math.random().toString(36).slice(2);
 
 /** Visitor chat for a published site. Styled only with the template's --site-* tokens. */
-export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
+export function ChatWidget({
+  slug,
+  owner,
+  botName = null,
+  greeting = null,
+  widgetStyle = "mono",
+}: {
+  slug: string;
+  owner: string;
+  /** Owner-chosen assistant name; defaults to "{owner}'s assistant". */
+  botName?: string | null;
+  /** Owner-written first message; defaults to the standard greeting. */
+  greeting?: string | null;
+  /** "accent" colours the launcher, send button and visitor bubbles with the accent. */
+  widgetStyle?: "mono" | "accent";
+}) {
+  const assistantName = botName || `${owner}'s assistant`;
   const panelId = useId();
   const storageKey = `loriyum-chat:${slug}`;
   const [open, setOpen] = useState(false);
@@ -133,12 +149,15 @@ export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
   }
 
   return (
-    <div className="fixed right-4 bottom-4 z-50 flex flex-col items-end gap-3 font-sans sm:right-6 sm:bottom-6">
+    <div
+      data-chat-style={widgetStyle}
+      className="fixed right-4 bottom-4 z-50 flex flex-col items-end gap-3 font-sans sm:right-6 sm:bottom-6"
+    >
       {open ? (
         <div
           id={panelId}
           role="dialog"
-          aria-label={`Ask ${owner}'s assistant`}
+          aria-label={botName ? botName : `Ask ${owner}'s assistant`}
           onKeyDown={(e) => {
             if (e.key === "Escape") close();
           }}
@@ -146,7 +165,9 @@ export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
         >
           <div className="flex items-center justify-between gap-3 border-b border-site-border px-4 py-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Ask {owner}&apos;s assistant</p>
+              <p className="truncate text-sm font-semibold">
+                {botName ? botName : `Ask ${owner}'s assistant`}
+              </p>
               <p className="text-xs text-site-muted">
                 Answers only from {owner}&apos;s approved info
               </p>
@@ -168,14 +189,14 @@ export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
             className="flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm"
           >
             <p className="max-w-[85%] rounded-2xl rounded-bl-md border border-site-border bg-site-bg px-3 py-2 leading-relaxed">
-              Hi! Ask me anything about {owner}. If I don&apos;t know, I&apos;ll pass your question
-              on.
+              {greeting ||
+                `Hi! Ask me anything about ${owner}. If I don't know, I'll pass your question on.`}
             </p>
             {messages.map((m) =>
               m.role === "visitor" ? (
                 <p
                   key={m.id}
-                  className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-site-fg px-3 py-2 leading-relaxed whitespace-pre-wrap text-site-bg"
+                  className="chat-primary ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-site-fg px-3 py-2 leading-relaxed whitespace-pre-wrap text-site-bg"
                 >
                   {m.text}
                 </p>
@@ -221,7 +242,7 @@ export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
               type="submit"
               disabled={sending || !input.trim()}
               aria-label="Send"
-              className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-site-fg text-site-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent disabled:opacity-40"
+              className="chat-primary flex size-10 shrink-0 items-center justify-center rounded-xl bg-site-fg text-site-bg transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent disabled:opacity-40"
             >
               {sending ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden="true" />
@@ -238,9 +259,9 @@ export function ChatWidget({ slug, owner }: { slug: string; owner: string }) {
         type="button"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={open ? "Close chat" : `Chat with ${owner}'s assistant`}
+        aria-label={open ? "Close chat" : `Chat with ${assistantName}`}
         onClick={() => (open ? close() : setOpen(true))}
-        className="flex size-14 items-center justify-center rounded-full bg-site-fg text-site-bg shadow-xl transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent motion-reduce:transition-none motion-reduce:hover:scale-100"
+        className="chat-primary flex size-14 items-center justify-center rounded-full bg-site-fg text-site-bg shadow-xl transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent motion-reduce:transition-none motion-reduce:hover:scale-100"
       >
         {open ? (
           <X className="size-5" aria-hidden="true" />
@@ -360,7 +381,7 @@ function NotifyForm({
       <button
         type="submit"
         disabled={state === "sending"}
-        className="h-8 shrink-0 rounded-lg bg-site-fg px-3 text-xs font-medium text-site-bg disabled:opacity-50"
+        className="chat-primary h-8 shrink-0 rounded-lg bg-site-fg px-3 text-xs font-medium text-site-bg disabled:opacity-50"
       >
         Email me
       </button>

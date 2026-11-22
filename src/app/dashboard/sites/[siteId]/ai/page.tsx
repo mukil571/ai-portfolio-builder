@@ -5,13 +5,15 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AiSettingsPanel } from "@/components/ai/ai-settings-panel";
+import { ChatbotSettings } from "@/components/ai/chatbot-settings";
 import { UsageMeter } from "@/components/ai/usage-meter";
 import { SiteTabs } from "@/components/dashboard/site-tabs";
 import { getEnv } from "@/env";
 import { requireUser } from "@/lib/auth/session";
 import { parseEncryptionSecret } from "@/lib/crypto/api-keys";
 import { getDb } from "@/lib/db";
-import { getOwnerAiSettings } from "@/lib/db/queries/ai-settings";
+import { getChatbotSettings, getOwnerAiSettings } from "@/lib/db/queries/ai-settings";
+import { ownerDisplayName } from "@/lib/db/queries/chat";
 import { countQuestionsByStatus } from "@/lib/db/queries/inbox";
 import { getEditableSite } from "@/lib/db/queries/site-builder";
 import { plans } from "@/lib/plans/plans";
@@ -54,13 +56,15 @@ async function Ai({ params }: Props) {
   const user = await requireUser(`/dashboard/sites/${siteId}/ai`);
   if (!isUuid(siteId)) notFound();
   const db = getDb();
-  const [site, settings, counts, status] = await Promise.all([
+  const [site, settings, counts, status, chatbot] = await Promise.all([
     getEditableSite(db, user.id, siteId),
     getOwnerAiSettings(db, user.id, siteId),
     countQuestionsByStatus(db, siteId),
     getPlanStatus(db, user.id),
+    getChatbotSettings(db, user.id, siteId),
   ]);
-  if (!site || !settings) notFound();
+  if (!site || !settings || !chatbot) notFound();
+  const owner = await ownerDisplayName(db, siteId, site.name);
   const env = getEnv();
 
   return (
@@ -96,6 +100,18 @@ async function Ai({ params }: Props) {
           </div>
         }
       />
+      <div className="mt-6">
+        <ChatbotSettings
+          siteId={siteId}
+          owner={owner}
+          initial={{
+            botName: chatbot.botName ?? "",
+            greeting: chatbot.greeting ?? "",
+            tone: chatbot.tone,
+            widgetStyle: chatbot.widgetStyle,
+          }}
+        />
+      </div>
     </>
   );
 }

@@ -40,7 +40,10 @@ export const aiSettings = pgTable(
     allowGeneralAnswers: boolean().notNull().default(false),
     botName: text(),
     greeting: text(),
+    /** Writing style hint for answers: friendly | professional | concise (never facts). */
     tone: text(),
+    /** Chat widget colours: "mono" (site text colour, default) or "accent". */
+    widgetStyle: text(),
     updatedAt: timestamp({ withTimezone: true })
       .notNull()
       .defaultNow()

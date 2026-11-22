@@ -11,7 +11,7 @@ import { replyTemplates } from "@/lib/ai/templates";
 import { getIpHash, getUserAgent, getVisitorId } from "@/lib/chat/visitor";
 import { parseEncryptionSecret } from "@/lib/crypto/api-keys";
 import { getDb } from "@/lib/db";
-import { getChatAiConfig } from "@/lib/db/queries/ai-settings";
+import { getChatAiConfig, getChatTone } from "@/lib/db/queries/ai-settings";
 import {
   countRecentByIp,
   countRecentBySite,
@@ -134,6 +134,7 @@ export async function POST(request: Request): Promise<Response> {
         owner: site.owner,
         allowGeneralAnswers: site.allowGeneralAnswers,
         message,
+        tone: await getChatTone(db, site.siteId),
       },
       chatDepsForModel(languageModel(choice.provider, choice.model, choice.apiKey)),
     );

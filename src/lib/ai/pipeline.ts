@@ -21,6 +21,7 @@ export type Draft = z.output<typeof draftSchema>;
 
 export type Drafter = (input: {
   owner: string;
+  tone?: "friendly" | "professional" | "concise";
   facts: RetrievedFact[];
   message: string;
 }) => Promise<Draft>;
@@ -52,6 +53,8 @@ export type ChatInput = {
   owner: string;
   allowGeneralAnswers: boolean;
   message: string;
+  /** Owner's writing-style choice (default friendly). */
+  tone?: "friendly" | "professional" | "concise";
 };
 
 /**
@@ -78,7 +81,9 @@ export async function runChatPipeline(
   }
 
   const facts = await searchFacts(db, siteId, question, deps.embed, chatConfig.RETRIEVE_K);
-  const draft = draftSchema.parse(await deps.draft({ owner, facts, message: question }));
+  const draft = draftSchema.parse(
+    await deps.draft({ owner, facts, message: question, tone: input.tone }),
+  );
 
   if (draft.intent === "off_topic") {
     return {

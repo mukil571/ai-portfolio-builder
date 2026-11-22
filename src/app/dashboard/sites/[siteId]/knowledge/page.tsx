@@ -5,11 +5,13 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { SiteTabs } from "@/components/dashboard/site-tabs";
+import { ConflictHints } from "@/components/knowledge/conflict-hints";
 import { KnowledgeSection } from "@/components/knowledge/knowledge-section";
 import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import { countQuestionsByStatus } from "@/lib/db/queries/inbox";
 import { getEditableSite } from "@/lib/db/queries/site-builder";
+import { findFactConflicts } from "@/lib/db/queries/workspace";
 import { isUuid } from "@/lib/sites/slug";
 
 export const metadata: Metadata = { title: "Knowledge Base · Loriyum" };
@@ -39,9 +41,10 @@ async function Knowledge({ params }: Props) {
   const user = await requireUser(`/dashboard/sites/${siteId}/knowledge`);
   if (!isUuid(siteId)) notFound();
   // Both queries are owner-safe: counts are only shown if the site turns out to be theirs.
-  const [site, counts] = await Promise.all([
+  const [site, counts, conflicts] = await Promise.all([
     getEditableSite(getDb(), user.id, siteId),
     countQuestionsByStatus(getDb(), siteId),
+    findFactConflicts(getDb(), user.id, siteId),
   ]);
   if (!site) notFound();
   return (
@@ -53,6 +56,7 @@ async function Knowledge({ params }: Props) {
         </span>
       </h1>
       <SiteTabs siteId={site.id} current="knowledge" openQuestions={counts.open} />
+      <ConflictHints conflicts={conflicts ?? []} />
       <KnowledgeSection ownerId={user.id} siteId={site.id} />
     </>
   );

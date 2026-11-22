@@ -26,3 +26,16 @@ export const saveKeySchema = z.object({
 export const siteOnlySchema = z.object({ siteId });
 export const byokModelSchema = z.object({ siteId, model: z.string().min(1).max(80) });
 export const changePlanSchema = z.object({ plan: z.enum(planIds) });
+
+export const chatTones = ["friendly", "professional", "concise"] as const;
+export type ChatTone = (typeof chatTones)[number];
+export const widgetStyles = ["mono", "accent"] as const;
+export type WidgetStyle = (typeof widgetStyles)[number];
+
+export const chatbotSettingsSchema = z.object({
+  siteId,
+  botName: z.string().trim().max(40, "Keep the name under 40 characters."),
+  greeting: z.string().trim().max(240, "Keep the greeting under 240 characters."),
+  tone: z.enum(chatTones),
+  widgetStyle: z.enum(widgetStyles),
+});

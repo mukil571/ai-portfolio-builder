@@ -1,39 +1,57 @@
-import { BookOpenCheck, Bot, MessageCircleQuestion, Palette, PenLine } from "lucide-react";
+import {
+  BarChart3,
+  BookOpenCheck,
+  Bot,
+  LayoutDashboard,
+  MessageCircleQuestion,
+  MessagesSquare,
+  Palette,
+  PenLine,
+} from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "cn";
 
-/** Tabs for a site's workspace pages (Knowledge Base, Questions). */
+export type SiteTab =
+  | "overview"
+  | "content"
+  | "design"
+  | "knowledge"
+  | "questions"
+  | "conversations"
+  | "analytics"
+  | "ai";
+
+/** Tabs for a site's workspace pages. Scrolls sideways on small screens. */
 export function SiteTabs({
   siteId,
   current,
   openQuestions,
 }: {
   siteId: string;
-  current: "content" | "design" | "knowledge" | "questions" | "ai";
+  current: SiteTab;
   openQuestions?: number;
 }) {
+  const base = `/dashboard/sites/${siteId}`;
   const tabs = [
-    {
-      key: "content",
-      label: "Content",
-      href: `/dashboard/sites/${siteId}/setup/content`,
-      Icon: PenLine,
-    },
-    { key: "design", label: "Design", href: `/dashboard/sites/${siteId}/design`, Icon: Palette },
-    {
-      key: "knowledge",
-      label: "Knowledge Base",
-      href: `/dashboard/sites/${siteId}/knowledge`,
-      Icon: BookOpenCheck,
-    },
+    { key: "overview", label: "Overview", href: base, Icon: LayoutDashboard },
+    { key: "content", label: "Content", href: `${base}/setup/content`, Icon: PenLine },
+    { key: "design", label: "Design", href: `${base}/design`, Icon: Palette },
+    { key: "knowledge", label: "Knowledge Base", href: `${base}/knowledge`, Icon: BookOpenCheck },
     {
       key: "questions",
       label: "Questions",
-      href: `/dashboard/sites/${siteId}/questions`,
+      href: `${base}/questions`,
       Icon: MessageCircleQuestion,
     },
-    { key: "ai", label: "AI & API", href: `/dashboard/sites/${siteId}/ai`, Icon: Bot },
+    {
+      key: "conversations",
+      label: "Conversations",
+      href: `${base}/conversations`,
+      Icon: MessagesSquare,
+    },
+    { key: "analytics", label: "Analytics", href: `${base}/analytics`, Icon: BarChart3 },
+    { key: "ai", label: "AI & API", href: `${base}/ai`, Icon: Bot },
   ] as const;
   return (
     <nav
@@ -63,5 +81,51 @@ export function SiteTabs({
         </Link>
       ))}
     </nav>
+  );
+}
+
+/** Small number card used on Overview and Analytics. */
+export function StatCard({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string | number;
+  hint?: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-card/50 p-4">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+/** Shared page frame for a site's workspace tab: back link, title, tabs. */
+export function WorkspaceHeader({
+  title,
+  siteName,
+  siteId,
+  current,
+  openQuestions,
+}: {
+  title: string;
+  siteName: string;
+  siteId: string;
+  current: SiteTab;
+  openQuestions?: number;
+}) {
+  return (
+    <>
+      <h1 className="mt-4 mb-6 text-2xl font-semibold tracking-tight">
+        {title}
+        <span className="mt-1 block text-base font-normal text-muted-foreground sm:mt-0 sm:ml-2 sm:inline">
+          {siteName}
+        </span>
+      </h1>
+      <SiteTabs siteId={siteId} current={current} openQuestions={openQuestions} />
+    </>
   );
 }

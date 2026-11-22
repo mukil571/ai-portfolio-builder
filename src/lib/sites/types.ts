@@ -11,5 +11,12 @@ export type SiteView = {
   seo: SiteSeo;
   sections: RenderableSection[];
   /** Set only on the live public page when the owner enabled the assistant. */
-  assistant?: { owner: string };
+  assistant?: {
+    owner: string;
+    botName: string | null;
+    greeting: string | null;
+    widgetStyle: "mono" | "accent";
+  };
+  /** Live public page only: count a (cookieless) page view. */
+  track?: boolean;
 };

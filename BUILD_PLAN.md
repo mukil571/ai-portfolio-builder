@@ -154,13 +154,13 @@ Legend: `[ ]` todo · `[x]` done
 ## Phase 9 — Workspace completeness
 **Goal:** all dashboard tabs real.
 
-- [ ] Overview (visits, chats, unanswered count)
-- [ ] Content Editor: edit sections post-deploy, **Republish**, unpublish
-- [ ] Chatbot Settings: name, greeting, tone, general-answers toggle, widget colors
-- [ ] Conversations and Leads: transcripts, captured emails, export CSV
-- [ ] Analytics: top questions, answered vs escalated, coverage gaps
-- [ ] Fact conflict hints (e.g. two different rates)
-- [ ] Delete site, export/delete my data
+- [x] Overview (visits, chats, unanswered count)
+- [x] Content Editor: edit sections post-deploy, **Republish**, unpublish
+- [x] Chatbot Settings: name, greeting, tone, general-answers toggle, widget colors
+- [x] Conversations and Leads: transcripts, captured emails, export CSV
+- [x] Analytics: top questions, answered vs escalated, coverage gaps
+- [x] Fact conflict hints (e.g. two different rates)
+- [x] Delete site, export/delete my data
 
 **Done when:** every tab has loading, empty and error states.
 
@@ -189,6 +189,13 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 
 ## Decision log
 Record every decision or deviation here, newest first.
+
+- 2026-11-22 (Phase 9): Workspace tabs per site: Overview, Content, Design, Knowledge Base, Questions, Conversations, Analytics, AI & API; sidebar adds Plan & usage and Account. Every tab has a Suspense loading state, friendly empty states, and `error.tsx` boundaries (dashboard + site).
+- 2026-11-22 (Phase 9): Deviation: no separate draft copy of a live site, so "Republish" = Unpublish / Publish again on Overview (content edits on a live site already go live instantly via autosave + cache tags).
+- 2026-11-22 (Phase 9): Visits = private counter (migration `0004`: `site_daily_stats` per site per UTC day). The live page sends a beacon with only the slug; no cookies/IPs/ids stored; skipped for Do-Not-Track/GPC and obvious bots (incl. HeadlessChrome). Counts page views, not unique visitors.
+- 2026-11-22 (Phase 9): Chatbot settings (`ai_settings.bot_name/greeting/tone/widget_style`): tone only appends a style line to the draft prompt ("friendly" leaves it byte-identical, so the eval still applies); greeting is owner-written text shown as-is (UI warns not to put facts there). "Accent" widget style colours launcher/send/visitor bubbles via `--site-accent`.
+- 2026-11-22 (Phase 9): Conflict hints = approved public facts with embedding similarity >= 0.80 whose numbers differ (reuses the grounding number extractor). Hints only, never blocking.
+- 2026-11-22 (Phase 9): Leads CSV neutralises spreadsheet formulas. Export my data = JSON of everything except password hashes, sessions, encrypted keys and embeddings. Delete account (type your email) signs out first, then deletes the user (everything cascades; usage logs removed). Uploaded images in Blob storage are not deleted yet.
 
 - 2026-11-22 (Phase 8): Phase 8 done. AI & API tab, own-key flow (with `API_KEY_ENCRYPTION_KEY` set in Vercel) and Plan & usage verified by the owner on production.
 

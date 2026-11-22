@@ -223,3 +223,102 @@ export async function getOwnerKeyRecord(
     keyVersion: row.keyVersion,
   };
 }
+
+export type ChatbotSettings = {
+  botName: string | null;
+  greeting: string | null;
+  tone: "friendly" | "professional" | "concise";
+  widgetStyle: "mono" | "accent";
+};
+
+const asTone = (v: string | null | undefined): ChatbotSettings["tone"] =>
+  v === "professional" || v === "concise" ? v : "friendly";
+const asWidgetStyle = (v: string | null | undefined): ChatbotSettings["widgetStyle"] =>
+  v === "accent" ? "accent" : "mono";
+
+/** Owner view of the chatbot's name/greeting/tone/colours (null if not their site). */
+export async function getChatbotSettings(
+  db: AppDb,
+  ownerId: string,
+  siteId: string,
+): Promise<ChatbotSettings | null> {
+  const [row] = await db
+    .select({
+      botName: aiSettings.botName,
+      greeting: aiSettings.greeting,
+      tone: aiSettings.tone,
+      widgetStyle: aiSettings.widgetStyle,
+    })
+    .from(sites)
+    .leftJoin(aiSettings, eq(aiSettings.siteId, sites.id))
+    .where(and(eq(sites.id, siteId), eq(sites.ownerId, ownerId)))
+    .limit(1);
+  if (!row) return null;
+  return {
+    botName: row.botName ?? null,
+    greeting: row.greeting ?? null,
+    tone: asTone(row.tone),
+    widgetStyle: asWidgetStyle(row.widgetStyle),
+  };
+}
+
+export async function setChatbotSettings(
+  db: AppDb,
+  ownerId: string,
+  siteId: string,
+  input: {
+    botName: string;
+    greeting: string;
+    tone: ChatbotSettings["tone"];
+    widgetStyle: ChatbotSettings["widgetStyle"];
+  },
+): Promise<{ slug: string } | null> {
+  const [site] = await db
+    .select({ slug: sites.slug })
+    .from(sites)
+    .where(and(eq(sites.id, siteId), eq(sites.ownerId, ownerId)))
+    .limit(1);
+  if (!site) return null;
+  const values = {
+    botName: input.botName || null,
+    greeting: input.greeting || null,
+    tone: input.tone,
+    widgetStyle: input.widgetStyle,
+  };
+  await db
+    .insert(aiSettings)
+    .values({ siteId, ...values })
+    .onConflictDoUpdate({ target: aiSettings.siteId, set: values });
+  return site;
+}
+
+/** Public: how a published site's widget presents itself (no secrets). */
+export async function getWidgetDisplay(
+  db: AppDb,
+  siteId: string,
+): Promise<{ botName: string | null; greeting: string | null; widgetStyle: "mono" | "accent" }> {
+  const [row] = await db
+    .select({
+      botName: aiSettings.botName,
+      greeting: aiSettings.greeting,
+      widgetStyle: aiSettings.widgetStyle,
+    })
+    .from(aiSettings)
+    .where(eq(aiSettings.siteId, siteId))
+    .limit(1);
+  return {
+    botName: row?.botName ?? null,
+    greeting: row?.greeting ?? null,
+    widgetStyle: asWidgetStyle(row?.widgetStyle),
+  };
+}
+
+/** Public (chat route): the owner's chosen answer tone for a site. */
+export async function getChatTone(db: AppDb, siteId: string): Promise<ChatbotSettings["tone"]> {
+  const [row] = await db
+    .select({ tone: aiSettings.tone })
+    .from(aiSettings)
+    .where(eq(aiSettings.siteId, siteId))
+    .limit(1);
+  return asTone(row?.tone);
+}

@@ -189,8 +189,8 @@ export function AiSettingsPanel({
           Your own AI key
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Stored encrypted. We only ever show its last 4 characters, and it&apos;s only used to answer
-          your visitors.
+          Stored encrypted. We only ever show its last 4 characters, and it&apos;s only used to
+          answer your visitors.
         </p>
 
         {!byokReady ? (

@@ -2,6 +2,8 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
+  primaryKey,
   index,
   integer,
   jsonb,
@@ -96,4 +98,20 @@ export const siteSections = pgTable(
       .$onUpdate(() => new Date()),
   },
   (t) => [uniqueIndex().on(t.siteId, t.type), index().on(t.siteId, t.position)],
+);
+
+/**
+ * Private visit counter: page views per site per UTC day. No cookies, no IPs, no visitor
+ * identifiers are stored; it is only a number.
+ */
+export const siteDailyStats = pgTable(
+  "site_daily_stats",
+  {
+    siteId: uuid()
+      .notNull()
+      .references(() => sites.id, { onDelete: "cascade" }),
+    day: date({ mode: "string" }).notNull(),
+    visits: integer().notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.siteId, t.day] })],
 );

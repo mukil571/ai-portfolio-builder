@@ -3,6 +3,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 
 import { getDb } from "@/lib/db";
+import { getWidgetDisplay } from "@/lib/db/queries/ai-settings";
 import { assistantEnabledFor, ownerDisplayName } from "@/lib/db/queries/chat";
 import { getPublishedSiteBySlug } from "@/lib/db/queries/sites";
 
@@ -27,7 +28,10 @@ export async function getPublicSiteView(slug: string): Promise<SiteView | null> 
   const view = toSiteView(row.site, row.sections);
   const enabled = await assistantEnabledFor(db, [row.site.id]);
   if (enabled.has(row.site.id)) {
-    view.assistant = { owner: await ownerDisplayName(db, row.site.id, row.site.name) };
+    view.assistant = {
+      owner: await ownerDisplayName(db, row.site.id, row.site.name),
+      ...(await getWidgetDisplay(db, row.site.id)),
+    };
   }
   return view;
 }
