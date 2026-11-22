@@ -1,7 +1,6 @@
 import "server-only";
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateText, Output } from "ai";
+import { generateText, Output, type LanguageModel } from "ai";
 
 import { getEnv } from "@/env";
 import { embed } from "@/lib/knowledge/embeddings";
@@ -14,19 +13,16 @@ import {
   generalSystemPrompt,
   generalUserPrompt,
 } from "./prompts";
+import { languageModel } from "./providers";
 
 export class ChatUnavailableError extends Error {}
 
 /**
- * Real model dependencies for the chat pipeline using the PLATFORM key
- * (owners' own providers arrive in Phase 8).
+ * Chat pipeline dependencies for any language model (the owner's own or the platform's).
+ * Embeddings ALWAYS use the fixed platform embedding model (CLAUDE.md §3), whatever
+ * model writes the answers; the grounding gate is the same for every model.
  */
-export function platformChatDeps(): ChatDeps {
-  const apiKey = getEnv().GOOGLE_GENERATIVE_AI_API_KEY;
-  if (!apiKey) throw new ChatUnavailableError("Platform AI key missing");
-  const google = createGoogleGenerativeAI({ apiKey });
-  const model = google(chatConfig.PLATFORM_CHAT_MODEL);
-
+export function chatDepsForModel(model: LanguageModel): ChatDeps {
   return {
     embed,
     draft: async ({ owner, facts, message }) => {
@@ -52,4 +48,11 @@ export function platformChatDeps(): ChatDeps {
       return text;
     },
   };
+}
+
+/** Dependencies using Loriyum's own key and platform model (eval, platform mode). */
+export function platformChatDeps(): ChatDeps {
+  const apiKey = getEnv().GOOGLE_GENERATIVE_AI_API_KEY;
+  if (!apiKey) throw new ChatUnavailableError("Platform AI key missing");
+  return chatDepsForModel(languageModel("google", chatConfig.PLATFORM_CHAT_MODEL, apiKey));
 }

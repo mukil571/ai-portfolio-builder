@@ -1,12 +1,17 @@
 import { after } from "next/server";
 
+import { getEnv } from "@/env";
 import { chatConfig } from "@/lib/ai/chat-config";
+import { chooseChatModel } from "@/lib/ai/chat-model";
 import { cleanMessage } from "@/lib/ai/guard";
-import { ChatUnavailableError, platformChatDeps } from "@/lib/ai/models-live";
+import { chatDepsForModel } from "@/lib/ai/models-live";
 import { runChatPipeline, type ChatOutcome } from "@/lib/ai/pipeline";
+import { languageModel } from "@/lib/ai/providers";
 import { replyTemplates } from "@/lib/ai/templates";
 import { getIpHash, getUserAgent, getVisitorId } from "@/lib/chat/visitor";
+import { parseEncryptionSecret } from "@/lib/crypto/api-keys";
 import { getDb } from "@/lib/db";
+import { getChatAiConfig } from "@/lib/db/queries/ai-settings";
 import {
   countRecentByIp,
   countRecentBySite,
@@ -16,6 +21,7 @@ import {
 } from "@/lib/db/queries/chat";
 import { knowledgeFacts } from "@/lib/db/schema";
 import { alertOwnerOfNewQuestion } from "@/lib/inbox/notify";
+import { getPlanStatus, recordChatUsage } from "@/lib/plans/usage";
 import { chatRequestSchema } from "@/lib/validation/chat";
 
 import { and, eq, inArray } from "drizzle-orm";
@@ -24,7 +30,7 @@ import { and, eq, inArray } from "drizzle-orm";
 export type ChatEvent =
   | {
       type: "meta";
-      kind: ChatOutcome["kind"] | "not_configured" | "rate_limited" | "error";
+      kind: ChatOutcome["kind"] | "not_configured" | "rate_limited" | "quota_exceeded" | "error";
       conversationId?: string;
       unansweredQuestionId?: string;
       label?: string;
@@ -53,7 +59,7 @@ function chunks(text: string): ChatEvent[] {
 }
 
 function templateReply(
-  kind: "not_configured" | "rate_limited" | "error",
+  kind: "not_configured" | "rate_limited" | "quota_exceeded" | "error",
   text: string,
   status: number,
 ) {
@@ -95,6 +101,22 @@ export async function POST(request: Request): Promise<Response> {
     return templateReply("rate_limited", replyTemplates.rateLimited, 429);
   }
 
+  // Whose model answers: the owner's own key, or Loriyum's within the plan quota.
+  const config = await getChatAiConfig(db, site.siteId);
+  if (!config) return Response.json({ error: "Not found." }, { status: 404 });
+  const env = getEnv();
+  const choice = await chooseChatModel(config, site.siteId, {
+    platformKey: env.GOOGLE_GENERATIVE_AI_API_KEY,
+    encryptionSecret: () => parseEncryptionSecret(env.API_KEY_ENCRYPTION_KEY),
+    planStatus: () => getPlanStatus(db, config.ownerId),
+  });
+  if (choice.kind === "not_configured") {
+    return templateReply("not_configured", replyTemplates.notConfigured, 200);
+  }
+  if (choice.kind === "quota_exceeded") {
+    return templateReply("quota_exceeded", replyTemplates.quotaReached, 200);
+  }
+
   const conversationId = await getOrCreateConversation(db, {
     siteId: site.siteId,
     visitorId: await getVisitorId(),
@@ -113,15 +135,15 @@ export async function POST(request: Request): Promise<Response> {
         allowGeneralAnswers: site.allowGeneralAnswers,
         message,
       },
-      platformChatDeps(),
+      chatDepsForModel(languageModel(choice.provider, choice.model, choice.apiKey)),
     );
   } catch (error) {
-    if (error instanceof ChatUnavailableError) {
-      return templateReply("not_configured", replyTemplates.notConfigured, 200);
-    }
+    // Provider errors are summarised (name/status only): their messages can echo requests.
     console.error("[chat] pipeline failed", {
       siteId: site.siteId,
-      error: (error as Error)?.message,
+      provider: choice.provider,
+      error: (error as Error)?.name,
+      status: (error as { statusCode?: number })?.statusCode ?? null,
     });
     return templateReply("error", replyTemplates.error, 500);
   }
@@ -134,11 +156,16 @@ export async function POST(request: Request): Promise<Response> {
     intent: outcome.intent,
     factIds,
     unansweredQuestionId,
-    provider: outcome.kind === "answer" || outcome.kind === "general" ? "google" : null,
-    model:
-      outcome.kind === "answer" || outcome.kind === "general"
-        ? chatConfig.PLATFORM_CHAT_MODEL
-        : null,
+    provider: outcome.kind === "answer" || outcome.kind === "general" ? choice.provider : null,
+    model: outcome.kind === "answer" || outcome.kind === "general" ? choice.model : null,
+  });
+  // One metered message per visitor message the pipeline handled.
+  await recordChatUsage(db, {
+    userId: config.ownerId,
+    siteId: site.siteId,
+    platformBilled: choice.platformBilled,
+    provider: choice.provider,
+    model: choice.model,
   });
 
   // Owner email for a NEW question (instant sites); runs after the reply is sent.

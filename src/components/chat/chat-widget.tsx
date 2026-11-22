@@ -4,7 +4,14 @@ import { BadgeCheck, Info, Loader2, MessageCircle, Send, X } from "lucide-react"
 import { useEffect, useId, useRef, useState } from "react";
 
 type Kind =
-  "answer" | "general" | "redirect" | "unknown" | "not_configured" | "rate_limited" | "error";
+  | "answer"
+  | "general"
+  | "redirect"
+  | "unknown"
+  | "not_configured"
+  | "rate_limited"
+  | "quota_exceeded"
+  | "error";
 
 type Message = {
   id: string;

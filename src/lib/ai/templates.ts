@@ -8,6 +8,8 @@ export const replyTemplates = {
   redirect: (owner: string) => `I can only help with questions about ${owner} and their work.`,
   notConfigured: "The assistant isn't set up on this site yet.",
   rateLimited: "You're sending messages a little fast. Please wait a moment and try again.",
+  quotaReached:
+    "This assistant has answered all the questions it can this month. Please use the contact details on this page to reach the owner directly.",
   error: "Sorry, something went wrong. Please try again in a moment.",
 };
 
