@@ -190,6 +190,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-22 (Phase 9): Phase 9 done. Overview/visits, conversations, analytics, chatbot settings, unpublish/publish again and data export verified by the owner on production.
+
 - 2026-11-22 (Phase 9): Workspace tabs per site: Overview, Content, Design, Knowledge Base, Questions, Conversations, Analytics, AI & API; sidebar adds Plan & usage and Account. Every tab has a Suspense loading state, friendly empty states, and `error.tsx` boundaries (dashboard + site).
 - 2026-11-22 (Phase 9): Deviation: no separate draft copy of a live site, so "Republish" = Unpublish / Publish again on Overview (content edits on a live site already go live instantly via autosave + cache tags).
 - 2026-11-22 (Phase 9): Visits = private counter (migration `0004`: `site_daily_stats` per site per UTC day). The live page sends a beacon with only the slug; no cookies/IPs/ids stored; skipped for Do-Not-Track/GPC and obvious bots (incl. HeadlessChrome). Counts page views, not unique visitors.
