@@ -24,6 +24,8 @@ async function visitorAsks(browser: Browser, slug: string, owner: string, questi
   const page = await context.newPage();
   await page.goto(`/site/${slug}`);
   await page.getByRole("button", { name: `Chat with ${owner}'s assistant` }).click();
+  // Real people take a moment to type; an instant send is treated as a bot.
+  await page.waitForTimeout(900);
   await page.getByLabel("Your question").fill(question);
   await page.getByRole("button", { name: "Send" }).click();
   return { page, close: () => context.close() };

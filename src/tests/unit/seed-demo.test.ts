@@ -39,6 +39,7 @@ describe("seedDemoSites", () => {
     expect(await seedDemoSites(query, "  owner@example.COM ")).toEqual([
       "created /site/demo (published).",
       "created /site/demo-draft (draft).",
+      "created /site/demo-business (published).",
     ]);
 
     const demo = await getPublishedSiteBySlug(db, "demo");
@@ -53,9 +54,10 @@ describe("seedDemoSites", () => {
     expect(await seedDemoSites(query, "owner@example.com")).toEqual([
       "refreshed /site/demo (published).",
       "refreshed /site/demo-draft (draft).",
+      "refreshed /site/demo-business (published).",
     ]);
     const all = await db.select({ slug: sites.slug }).from(sites);
-    expect(all.map((s) => s.slug).sort()).toEqual(["demo", "demo-draft"]);
+    expect(all.map((s) => s.slug).sort()).toEqual(["demo", "demo-business", "demo-draft"]);
 
     const [draft] = await db.select({ id: sites.id }).from(sites).where(eqSlug("demo-draft"));
     const owned = await getSiteForOwner(db, "owner", draft!.id);
@@ -66,6 +68,7 @@ describe("seedDemoSites", () => {
     expect(await seedDemoSites(query, "other@example.com")).toEqual([
       "/site/demo belongs to another account; leaving it alone.",
       "/site/demo-draft belongs to another account; leaving it alone.",
+      "/site/demo-business belongs to another account; leaving it alone.",
     ]);
   });
 });
