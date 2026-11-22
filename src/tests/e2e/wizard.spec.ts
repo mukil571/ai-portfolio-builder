@@ -17,7 +17,10 @@ test("new owner signs up, builds a site in the wizard and publishes it", async (
   await page.getByText("Portfolio", { exact: true }).click();
   await page.getByLabel("Site name").fill("My test portfolio");
   await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByText("Coming soon").first()).toBeVisible();
+  // All four portfolio templates are offered, each with a live sample preview.
+  for (const name of ["Minimal Mono", "Bento", "Dark Dev", "Editorial"]) {
+    await expect(page.locator(`iframe[title="${name} template preview"]`)).toBeAttached();
+  }
   await page.getByRole("button", { name: "Use Minimal Mono" }).click();
   await expect(page).toHaveURL(/\/setup\/content$/);
 
