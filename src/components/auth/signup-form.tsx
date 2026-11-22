@@ -9,7 +9,14 @@ import { signUpSchema } from "@/lib/validation/auth";
 import { Field, fieldErrors, FormAlert, SubmitButton } from "./form-bits";
 import { GoogleButton } from "./google-button";
 
-export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
+export function SignupForm({
+  googleEnabled,
+  verificationRequired = true,
+}: {
+  googleEnabled: boolean;
+  /** False when the server has email confirmation switched off: go straight in. */
+  verificationRequired?: boolean;
+}) {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<string | null>(null);
@@ -25,6 +32,10 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
 
     const { error } = await authClient.signUp.email({ ...parsed.data, callbackURL: "/dashboard" });
     if (!error) {
+      if (!verificationRequired) {
+        router.push("/dashboard");
+        return router.refresh();
+      }
       return router.push(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
     }
     setPending(false);

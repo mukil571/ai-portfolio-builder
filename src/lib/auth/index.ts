@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 
 import { getEnv } from "@/env";
 import { getDb } from "@/lib/db";
-import { appBaseUrl, trustedOrigins } from "@/lib/env/schema";
+import { appBaseUrl, emailVerificationRequired, trustedOrigins } from "@/lib/env/schema";
 import { accounts, sessions, users, verifications } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email/send";
 import { resetPasswordMessage, verifyEmailMessage } from "@/lib/email/templates";
@@ -15,6 +15,9 @@ import { createFreeSubscription } from "@/lib/plans/subscriptions";
 function createAuth() {
   const env = getEnv();
   const googleEnabled = Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
+  // EMAIL_VERIFICATION=off: accounts work straight after sign-up and no confirmation
+  // emails are sent (see src/lib/env/schema.ts).
+  const verify = emailVerificationRequired(env);
 
   return betterAuth({
     appName: "Loriyum",
@@ -30,7 +33,7 @@ function createAuth() {
     }),
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: true,
+      requireEmailVerification: verify,
       minPasswordLength: 8,
       maxPasswordLength: 128,
       revokeSessionsOnPasswordReset: true,
@@ -40,8 +43,8 @@ function createAuth() {
       },
     },
     emailVerification: {
-      sendOnSignUp: true,
-      sendOnSignIn: true,
+      sendOnSignUp: verify,
+      sendOnSignIn: verify,
       autoSignInAfterVerification: true,
       expiresIn: 60 * 60,
       sendVerificationEmail: async ({ user, url }) => {

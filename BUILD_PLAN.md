@@ -190,6 +190,8 @@ Custom domains · embeddable widget for external sites · owner live-takeover ch
 ## Decision log
 Record every decision or deviation here, newest first.
 
+- 2026-11-22: `EMAIL_VERIFICATION=off` switch (owner's explicit request) because Resend's test sender only delivers to the owner's own address, so strangers could never confirm. Off = no confirmation emails, accounts usable straight after sign-up (Better Auth `requireEmailVerification`/`sendOnSignUp`/`sendOnSignIn` follow it; `getCurrentUser` accepts unverified users). Default stays "on"; turn it back on once a sending domain is verified. Risk accepted: anyone can sign up with someone else's address; password reset still needs working email.
+
 - 2026-11-22 (Phase 10): Rate limits: shared Postgres fixed-window counters (migration `0005`, `rate_limits`) on notify (5/10 min/IP), visit (120/min/IP), uploads (30/10 min/owner), AI owner tools (30/h/owner), key tests (10/10 min), data export (5/h); fail open on DB errors. Chat spam: honeypot field, < 600 ms open-to-send, same message within 2 min, 80-message conversation cap -> fixed replies, no AI call.
 - 2026-11-22 (Phase 10): Injection regression = a deliberately gullible fake model in `hardening.test.ts`; the gate must still block injected numbers and invented fact ids. Security review written to `docs/security-review.md` (incl. known gaps).
 - 2026-11-22 (Phase 10): Sentry (`@sentry/nextjs`, owner's OK) via `instrumentation.ts` / `instrumentation-client.ts`, loaded lazily only when `NEXT_PUBLIC_SENTRY_DSN` is set (eager loading added 150 KB to every page). No PII, no request data, no tracing/replay; API-key-shaped strings masked.

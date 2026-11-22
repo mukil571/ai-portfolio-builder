@@ -2,7 +2,9 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import { isGoogleSignInEnabled } from "@/lib/auth";
+import { getEnv } from "@/env";
 import { getCurrentUser } from "@/lib/auth/session";
+import { emailVerificationRequired } from "@/lib/env/schema";
 
 import { LoginForm } from "./login-form";
 import { SignupForm } from "./signup-form";
@@ -15,7 +17,10 @@ export async function AuthFormWithProviders({ form }: { form: "login" | "signup"
   return form === "login" ? (
     <LoginForm googleEnabled={googleEnabled} />
   ) : (
-    <SignupForm googleEnabled={googleEnabled} />
+    <SignupForm
+      googleEnabled={googleEnabled}
+      verificationRequired={emailVerificationRequired(getEnv())}
+    />
   );
 }
 

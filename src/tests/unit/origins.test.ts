@@ -74,3 +74,15 @@ describe("appBaseUrl", () => {
     ).toBe("https://ai-portfolio-builder-czbe.vercel.app");
   });
 });
+
+describe("emailVerificationRequired", () => {
+  it("is on unless explicitly switched off", async () => {
+    const { emailVerificationRequired, serverEnvSchema } = await import("@/lib/env/schema");
+    const parse = (v: string | undefined) => serverEnvSchema.shape.EMAIL_VERIFICATION.parse(v);
+    expect(emailVerificationRequired({ EMAIL_VERIFICATION: parse(undefined) })).toBe(true);
+    expect(emailVerificationRequired({ EMAIL_VERIFICATION: parse("") })).toBe(true);
+    expect(emailVerificationRequired({ EMAIL_VERIFICATION: parse("on") })).toBe(true);
+    expect(emailVerificationRequired({ EMAIL_VERIFICATION: parse("off") })).toBe(false);
+    expect(() => parse("maybe")).toThrow();
+  });
+});

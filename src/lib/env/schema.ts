@@ -18,6 +18,15 @@ export const serverEnvSchema = z.object({
   /** Google sign-in. The Google button is hidden unless both are set. */
   GOOGLE_CLIENT_ID: optionalSecret,
   GOOGLE_CLIENT_SECRET: optionalSecret,
+  /**
+   * "off" lets people use their account without confirming their email (e.g. while Resend
+   * can only deliver to one address). Default "on". Weaker: anyone can sign up with any
+   * email address. Password reset still needs working email.
+   */
+  EMAIL_VERIFICATION: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.enum(["on", "off"]).default("on"),
+  ),
   /** Transactional email. Unset in dev: emails are printed to the server log instead. */
   RESEND_API_KEY: optionalSecret,
   EMAIL_FROM: z.string().min(3).default("Loriyum <onboarding@resend.dev>"),
@@ -103,4 +112,9 @@ export function parseEnv<T extends z.ZodType>(
     );
   }
   return result.data;
+}
+
+/** True unless EMAIL_VERIFICATION is explicitly "off". */
+export function emailVerificationRequired(env: Pick<ServerEnv, "EMAIL_VERIFICATION">): boolean {
+  return env.EMAIL_VERIFICATION !== "off";
 }

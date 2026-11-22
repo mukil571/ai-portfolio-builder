@@ -4,6 +4,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { getEnv } from "@/env";
+import { emailVerificationRequired } from "@/lib/env/schema";
+
 import { getAuth } from ".";
 
 export type SessionUser = { id: string; name: string; email: string; image: string | null };
@@ -17,7 +20,8 @@ export const getCurrentUser = cache(async function getCurrentUser(): Promise<Ses
   // (and its env/DB) is only initialised at request time.
   const requestHeaders = await headers();
   const session = await getAuth().api.getSession({ headers: requestHeaders });
-  if (!session || !session.user.emailVerified) return null;
+  if (!session) return null;
+  if (!session.user.emailVerified && emailVerificationRequired(getEnv())) return null;
   const { id, name, email, image } = session.user;
   return { id, name, email, image: image ?? null };
 });
