@@ -25,6 +25,12 @@ export const serverEnvSchema = z.object({
   BLOB_READ_WRITE_TOKEN: optionalSecret,
   /** Platform Google AI key for the fixed embedding model. Optional until Phase 4. */
   GOOGLE_GENERATIVE_AI_API_KEY: optionalSecret,
+  /**
+   * Encrypts owners' own AI keys (AES-256-GCM). 32 random bytes, base64:
+   * node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+   * Unset: owners can't save their own keys (Loriyum's AI still works).
+   */
+  API_KEY_ENCRYPTION_KEY: optionalSecret,
   /** Vercel Cron sends it as a Bearer token; the daily digest refuses requests without it. */
   CRON_SECRET: optionalSecret,
   /** "1" on Vercel (build and runtime); unset on a local machine. */
