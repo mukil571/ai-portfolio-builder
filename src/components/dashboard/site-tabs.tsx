@@ -1,4 +1,4 @@
-import { BookOpenCheck, MessageCircleQuestion } from "lucide-react";
+import { BookOpenCheck, MessageCircleQuestion, Palette, PenLine } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "cn";
@@ -10,10 +10,17 @@ export function SiteTabs({
   openQuestions,
 }: {
   siteId: string;
-  current: "knowledge" | "questions";
+  current: "content" | "design" | "knowledge" | "questions";
   openQuestions?: number;
 }) {
   const tabs = [
+    {
+      key: "content",
+      label: "Content",
+      href: `/dashboard/sites/${siteId}/setup/content`,
+      Icon: PenLine,
+    },
+    { key: "design", label: "Design", href: `/dashboard/sites/${siteId}/design`, Icon: Palette },
     {
       key: "knowledge",
       label: "Knowledge Base",
@@ -28,14 +35,17 @@ export function SiteTabs({
     },
   ] as const;
   return (
-    <nav aria-label="Site workspace" className="mb-6 flex gap-1 border-b border-white/10">
+    <nav
+      aria-label="Site workspace"
+      className="mb-6 flex gap-1 overflow-x-auto border-b border-white/10"
+    >
       {tabs.map(({ key, label, href, Icon }) => (
         <Link
           key={key}
           href={href}
           aria-current={current === key ? "page" : undefined}
           className={cn(
-            "-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+            "-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
             current === key
               ? "border-[var(--brand-from)] text-foreground"
               : "border-transparent text-muted-foreground hover:text-foreground",

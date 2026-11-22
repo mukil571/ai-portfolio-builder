@@ -4,6 +4,7 @@ import {
   Eye,
   Globe,
   MessageCircleQuestion,
+  Palette,
   Pencil,
   Plus,
 } from "lucide-react";
@@ -79,6 +80,14 @@ function SiteCard({ site }: { site: OwnerSiteSummary }) {
           <Pencil className="size-3.5" aria-hidden="true" />
           {published ? "Edit" : "Continue setup"}
           <span className="sr-only"> {site.name}</span>
+        </Link>
+        <Link
+          href={`/dashboard/sites/${site.id}/design`}
+          className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        >
+          <Palette className="size-3.5" aria-hidden="true" />
+          Design
+          <span className="sr-only"> for {site.name}</span>
         </Link>
         <Link
           href={`/dashboard/sites/${site.id}/knowledge`}

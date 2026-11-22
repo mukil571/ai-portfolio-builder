@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { requireUser } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
+import { getSiteDesign } from "@/lib/db/queries/site-design";
 import {
   addSection,
   checkSlugAvailability,
@@ -60,8 +61,13 @@ export async function reorderSectionsAction(input: unknown): Promise<ActionResul
   const user = await requireUser();
   const parsed = reorderSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: GENERIC_ERROR };
-  const ok = await reorderSections(getDb(), user.id, parsed.data.siteId, parsed.data.order);
-  return ok ? { ok: true } : { ok: false, error: GENERIC_ERROR };
+  const db = getDb();
+  const ok = await reorderSections(db, user.id, parsed.data.siteId, parsed.data.order);
+  if (!ok) return { ok: false, error: GENERIC_ERROR };
+  // A new order on a live site shows up immediately.
+  const site = await getSiteDesign(db, user.id, parsed.data.siteId);
+  if (site?.status === "published") updateTag(siteCacheTag(site.slug));
+  return { ok: true };
 }
 
 export async function addSectionAction(input: unknown): Promise<ActionResult> {
